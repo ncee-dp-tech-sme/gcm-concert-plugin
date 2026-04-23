@@ -1,4 +1,20 @@
 {
-  "adapterName": "Custom Adapter",
-  "adapterDescription": "Add your adapter description here"
+  "plugin.title": "IBM Concert Discovery",
+  "plugin.description": "Discover certificates from IBM Concert environments",
+  "config.server_url.label": "Server URL",
+  "config.server_url.help": "IBM Concert server URL (must use HTTPS)",
+  "config.api_key.label": "API Key",
+  "config.api_key.help": "IBM Concert API key for authentication",
+  "config.instance_id.label": "Instance ID",
+  "config.instance_id.help": "IBM Concert instance identifier",
+  "config.verify_ssl.label": "Verify SSL",
+  "config.verify_ssl.help": "Enable SSL certificate verification",
+  "action.test_connection": "Test Connection",
+  "action.discover": "Discover Certificates",
+  "status.connecting": "Connecting to IBM Concert...",
+  "status.discovering": "Discovering certificates from environments...",
+  "status.success": "Discovery completed successfully",
+  "error.connection_failed": "Failed to connect to IBM Concert",
+  "error.authentication_failed": "Authentication failed. Check API key and instance ID",
+  "error.discovery_failed": "Certificate discovery failed"
 }

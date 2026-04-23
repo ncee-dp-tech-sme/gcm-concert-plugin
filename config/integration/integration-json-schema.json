@@ -1,12 +1,37 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "required": [
-    "hostname"
+    "server_url",
+    "api_key",
+    "instance_id"
   ],
   "properties": {
-    "hostname": {
+    "server_url": {
       "type": "string",
-      "title": "Hostname"
+      "format": "uri",
+      "pattern": "^https://",
+      "description": "IBM Concert server URL (must use HTTPS)",
+      "minLength": 1
+    },
+    "api_key": {
+      "type": "string",
+      "description": "IBM Concert API key for authentication",
+      "minLength": 1
+    },
+    "instance_id": {
+      "type": "string",
+      "description": "IBM Concert instance ID",
+      "minLength": 1
+    },
+    "verify_ssl": {
+      "type": "string",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "default": "true",
+      "description": "Verify SSL certificates (recommended: true)"
     }
   }
 }

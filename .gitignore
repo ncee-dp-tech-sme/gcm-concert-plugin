@@ -140,3 +140,5 @@ ansible_collections/
 checkpoint.md
 config/test_config.json
 config/test_connection_config.json
+.bob/mcp.json
+*.zip

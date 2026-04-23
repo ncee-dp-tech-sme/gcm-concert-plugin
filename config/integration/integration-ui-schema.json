@@ -1,10 +1,26 @@
 {
   "ui:order": [
-    "hostname"
+    "server_url",
+    "api_key",
+    "instance_id",
+    "verify_ssl"
   ],
-  "hostname": {
+  "server_url": {
     "ui:widget": "text",
-    "ui:placeholder": "Enter hostname",
-    "ui:help": "Enter the service URL or hostname"
+    "ui:placeholder": "https://your-instance.concert.saas.ibm.com",
+    "ui:help": "Enter the base URL of your IBM Concert instance (must use HTTPS)"
+  },
+  "api_key": {
+    "ui:widget": "password",
+    "ui:help": "API key from IBM Concert settings. Used in Authorization header as 'C_API_KEY {key}'"
+  },
+  "instance_id": {
+    "ui:widget": "text",
+    "ui:placeholder": "20240826-1930-2047-8140-78cf45ec64dc",
+    "ui:help": "IBM Concert instance ID. This is sent in the InstanceId header for API requests"
+  },
+  "verify_ssl": {
+    "ui:widget": "select",
+    "ui:help": "Enable SSL certificate verification (recommended: true). Disable only for testing with self-signed certificates"
   }
 }

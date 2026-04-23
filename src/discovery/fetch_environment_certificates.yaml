@@ -1,0 +1,84 @@
+---
+# Helper file to fetch certificates for a single environment
+# This file is included by process_instance.yaml with loop_var: concert_environment
+# Access environment data via {{ concert_environment.id }}, {{ concert_environment.name }}, etc.
+
+- name: Fetch certificates for environment {{ concert_environment.name | default(concert_environment.id) }}
+  block:
+    - name: Initialize pagination variables
+      set_fact:
+        current_page: 1
+        has_more_pages: true
+        environment_certificates: []
+
+    - name: Fetch certificates with pagination
+      block:
+        - name: Fetch certificate page
+          uri:
+            url: "{{ instance.server_url }}/core/api/v1/certificates?environment_id={{ concert_environment.id }}&page_size=2000&page_number={{ current_page }}"
+            method: GET
+            headers:
+              Authorization: "C_API_KEY {{ instance.api_key }}"
+              InstanceId: "{{ instance.instance_id }}"
+              Accept: "application/json"
+            validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+            status_code: [200]
+          register: certificates_response
+          no_log: true
+
+        - name: Extract certificates from response
+          set_fact:
+            page_certificates: "{{ certificates_response.json.certificates | default([]) }}"
+            total_pages: "{{ certificates_response.json.pagination.total_pages | default(1) }}"
+
+        - name: Append certificates to environment list
+          set_fact:
+            environment_certificates: "{{ environment_certificates + page_certificates }}"
+
+        - name: Check if more pages exist
+          set_fact:
+            has_more_pages: "{{ (current_page | int) < (total_pages | int) }}"
+            current_page: "{{ (current_page | int) + 1 }}"
+
+        - name: Continue pagination if needed
+          include_tasks: fetch_environment_certificates.yaml
+          when: has_more_pages | bool
+
+      when: has_more_pages | bool
+
+    - name: Enrich certificates with environment context
+      set_fact:
+        enriched_certificates: >-
+          {{
+            environment_certificates | map('combine', {
+              'environment_id': concert_environment.id,
+              'environment_name': concert_environment.name | default(''),
+              'environment_type': concert_environment.type | default(''),
+              'environment_status': concert_environment.status | default('')
+            }) | list
+          }}
+
+    - name: Write certificate output files
+      copy:
+        content: "{{ cert | to_nice_json }}"
+        dest: "{{ out_dir }}/crypto_asset_details_{{ instance_index }}_{{ env_index }}_{{ cert_index }}.json"
+      loop: "{{ enriched_certificates }}"
+      loop_control:
+        loop_var: cert
+        index_var: cert_index
+      when: enriched_certificates | length > 0
+
+    - name: Update instance asset counter
+      set_fact:
+        instance_asset_count: "{{ (instance_asset_count | int) + (enriched_certificates | length) }}"
+
+  rescue:
+    - name: Log certificate fetch error for environment
+      debug:
+        msg: "Failed to fetch certificates for environment {{ concert_environment.id }}: {{ ansible_failed_result.msg | default('Unknown error') }}"
+
+    - name: Continue with next environment despite error
+      set_fact:
+        instance_asset_count: "{{ instance_asset_count | int }}"
+
+# Made with Bob

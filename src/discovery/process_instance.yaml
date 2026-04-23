@@ -16,55 +16,52 @@
           }
         dest: "{{ out_dir }}/{{ status_file_name }}"
 
-    # Replace this task with the appropriate collection module call(s) to fetch assets.
-    # Refer to the collection documentation for the correct module and parameters.
-    # Access configuration fields via instance variable (e.g., {{ instance.url }}, {{ instance.apiKey }})
-    - name: Example - Process instance
-      ansible.builtin.debug:
-        msg: "Processing instance: {{ instance.url | default('target system') }}"
+    # Step 1: Fetch all environments from IBM Concert
+    - name: Fetch environments from IBM Concert
+      uri:
+        url: "{{ instance.server_url }}/core/api/v1/environments?page_size=2000"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ instance.api_key }}"
+          InstanceId: "{{ instance.instance_id }}"
+          Accept: "application/json"
+        validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+        status_code: [200]
+      register: environments_response
+      no_log: true
 
-    # TODO: Replace with actual asset discovery
-    # For collection-based approach:
-    # - name: Fetch assets using collection module
-    #   <namespace>.<collection>.<module>:
-    #     <param1>: "{{ instance.<field1> }}"
-    #     <param2>: "{{ instance.<field2> }}"
-    #   register: fetch_result
-    #   no_log: true
-    #
-    # - name: Write asset output files
-    #   copy:
-    #     content: "{{ asset | to_nice_json }}"
-    #     dest: "{{ out_dir }}/crypto_asset_details_{{ instance_index }}_{{ asset_index }}.json"
-    #   loop: "{{ fetch_result.<assets_field> }}"
-    #   loop_control:
-    #     loop_var: asset
-    #     index_var: asset_index
-    #
-    # For API-based approach:
-    # - name: Fetch assets from API
-    #   uri:
-    #     url: "{{ instance.url }}/api/certificates"
-    #     method: GET
-    #     headers:
-    #       Authorization: "Bearer {{ instance.apiKey }}"
-    #     validate_certs: "{{ instance.verifySsl | default(true) }}"
-    #     status_code: [200]
-    #   register: api_response
-    #   no_log: true
-    #
-    # - name: Write asset output files
-    #   copy:
-    #     content: "{{ asset | to_nice_json }}"
-    #     dest: "{{ out_dir }}/crypto_asset_details_{{ instance_index }}_{{ asset_index }}.json"
-    #   loop: "{{ api_response.json.certificates }}"
-    #   loop_control:
-    #     loop_var: asset
-    #     index_var: asset_index
+    - name: Initialize environment list
+      set_fact:
+        all_environments: "{{ environments_response.json.environments | default([]) }}"
+        total_environments: "{{ (environments_response.json.environments | default([]) | length) }}"
+
+    - name: Update status - fetched environments
+      copy:
+        content: |
+          {
+            "runId": "{{ run_id }}",
+            "action": "{{ action }}",
+            "status": "InProgress",
+            "message": "Found {{ total_environments }} environments in instance {{ instance_index + 1 }}"
+          }
+        dest: "{{ out_dir }}/{{ status_file_name }}"
+
+    # Step 2: Initialize asset counter for this instance
+    - name: Initialize instance asset counter
+      set_fact:
+        instance_asset_count: 0
+
+    # Step 3: Process each environment to fetch certificates
+    - name: Fetch certificates for each environment
+      include_tasks: fetch_environment_certificates.yaml
+      loop: "{{ all_environments }}"
+      loop_control:
+        loop_var: concert_environment
+        index_var: env_index
 
     - name: Update counters
       set_fact:
-        total_assets: "{{ (total_assets | int) + 0 }}"
+        total_assets: "{{ (total_assets | int) + (instance_asset_count | int) }}"
         successful_instances: "{{ (successful_instances | int) + 1 }}"
 
   rescue:
