@@ -2,9 +2,9 @@
   "mcpServers": {
     "gcm-custom-adaptor-concert": {
       "type": "streamable-http",
-      "url": "https://gcm.apps.itz-c25mbk.hub01-lb.techzone.ibm.com/ibm/mcp/mcp",
+      "url": "https://gcm.apps.itz--lb.techzone.ibm.com/ibm/mcp/mcp",
       "headers": {
-        "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ2ZV9rUHltSGZrUl9DM1NrNm92Wm1sejdWNVZlREFqSlNXV29fOUdMLU0wIn0.eyJleHAiOjE3NzY5ODQ5ODcsImlhdCI6MTc3Njk4MzE4NywianRpIjoib25ydHJvOjc5ZTE3ODY1LWIwNWEtNGEyZC1hMGUyLTdjZmJmNzc5NDdiMSIsImlzcyI6Imh0dHBzOi8vb2lkYy5hcHBzLml0ei1jMjVtYmsuaHViMDEtbGIudGVjaHpvbmUuaWJtLmNvbS9yZWFsbXMvZ2NtcmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNTkxMWJjZmUtNzIzMS00NDhjLWFjZmYtNGMzM2FlZDU1YTVjIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZ2NtY2xpZW50Iiwic2lkIjoiYzY0MjlhZWUtNTA4Ni00YzViLWI2ZDgtZmZiMmZhYTkyZmYxIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2djbS5hcHBzLml0ei1jMjVtYmsuaHViMDEtbGIudGVjaHpvbmUuaWJtLmNvbSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWdjbXJlYWxtIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIGdjbV90ZW5hbnRfY3JlYXRpb24iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6ImdjbSBhZG1pbiIsInByZWZlcnJlZF91c2VybmFtZSI6ImdjbWFkbWluIiwiZ2l2ZW5fbmFtZSI6ImdjbSIsImZhbWlseV9uYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImdjbWFkbWluQGdjbS5sb2NhbCJ9.X9UX6EUCdrTJas0qmbl7AetP1XqH9aGtaiEAdAQVoqugRLFKueOX3DLYtDP1HBfsMf752OJvDG4BEgb3Z1EQ3f1wyjI-txuLpVxNkF_6aDFwy3L5kFPpFVlJgOOZ7dHGzG7HmRvbPkNQLUQbxil8AYqtWVrwjKEjTDInYar4ZGXYd2RvGatpYk6yyG8ZpU9eDwr1-NtlyNpHyf3Xo-TIQ6sus-UsIM1EeES_ckNY-W1UgCpECM0h_dQ3J3Zq2ETcV5LNtcFaT1GlC4cXlwV9XjG1alLEN7ZGlqfIC5K7B65TGCu3rq3H6AxzOrXkf-9O00Cbtx9CeG6DViZn8woMuA",
+        "Authorization": "Bearer ",
         "X-MCP-Filtered-Tags": "Transformation,Ansible"
       },
       "alwaysAllow": [
