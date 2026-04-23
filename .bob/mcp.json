@@ -2,7 +2,7 @@
   "mcpServers": {
     "gcm-custom-adaptor": {
       "type": "streamable-http",
-      "url": "https://mcp-gcm.dev.fyre.ibm.com:31443/ibm/mcp/mcp",
+      "url": "https://gcm.apps.itz-c25mbk.hub01-lb.techzone.ibm.com/ibm/mcp/mcp",
       "headers": {
         "Authorization": "Bearer <token>",
         "X-MCP-Filtered-Tags": "Transformation,Ansible"
