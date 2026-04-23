@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "gcm-custom-adaptor-concert": {
+      "type": "streamable-http",
+      "url": "https://gcmserver/ibm/mcp/mcp",
+      "headers": {
+        "Authorization": "Bearer ",
+        "X-MCP-Filtered-Tags": "Transformation,Ansible"
+      },
+      "alwaysAllow": [
+        "get_ansible_collection_versions",
+        "search_ansible_galaxy_collections",
+        "test_transformation_files"
+      ],
+      "disabledTools": [
+        "update_transformation",
+        "get_transformation_by_id",
+        "list_transformations",
+        "test_transformation_summary"
+      ],
+      "disabled": false
+    }
+  }
+}

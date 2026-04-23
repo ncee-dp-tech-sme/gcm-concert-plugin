@@ -142,3 +142,4 @@ config/test_config.json
 config/test_connection_config.json
 .bob/mcp.json
 *.zip
+.bob/mcp.json
