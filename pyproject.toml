@@ -1,0 +1,10 @@
+[project]
+name = "gcm-custom-adaptor"
+version = "1.0.0"
+description = "GCM Custom Plugin Development Template"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ansible>=9.0.0",
+    "ansible-core>=2.16.0",
+]

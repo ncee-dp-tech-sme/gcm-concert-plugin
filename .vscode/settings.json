@@ -1,0 +1,5 @@
+{
+  
+  "bob-code.useAgentRules": true,
+  "bob-code.autoImportSettingsPath": ".bob/bob-config.json"
+}

@@ -1,0 +1,88 @@
+---
+- name: Test Connection to Target System
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    # Configuration is passed directly via --extra-vars by GCM
+    # For test_connection, GCM flattens the integration config to root level
+    # All fields are available as top-level variables
+    - name: Initialize variables
+      set_fact:
+        out_dir: "{{ out_dir }}"
+        status_file: "{{ out_dir }}/{{ status_file_name }}"
+
+    - name: Create output directory
+      file:
+        path: "{{ out_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Test connection
+      block:
+        - name: Initialize status
+          copy:
+            content: |
+              {
+                "runId": "{{ run_id }}",
+                "action": "{{ action }}",
+                "status": "InProgress",
+                "message": "Testing connection"
+              }
+            dest: "{{ status_file }}"
+
+        # Replace this task with the appropriate collection module or API call
+        # Access configuration fields directly as top-level variables
+        # Example: {{ url }}, {{ apiKey }}, {{ username }}, {{ password }}
+        - name: Example - Test connection
+          ansible.builtin.debug:
+            msg: "Testing connection to: {{ url | default('target system') }}"
+
+        # TODO: Replace with actual connection test
+        # For collection-based approach:
+        # - name: Test connection using collection module
+        #   <namespace>.<collection>.<module>:
+        #     <param1>: "{{ <field1> }}"
+        #     <param2>: "{{ <field2> }}"
+        #   register: connection_result
+        #
+        # For API-based approach:
+        # - name: Test API connectivity
+        #   uri:
+        #     url: "{{ url }}/health"
+        #     method: GET
+        #     headers:
+        #       Authorization: "Bearer {{ apiKey }}"
+        #     validate_certs: "{{ verifySsl | default(true) }}"
+        #     status_code: [200]
+        #   register: api_response
+        #   no_log: true
+
+        - name: Update status - Success
+          copy:
+            content: |
+              {
+                "runId": "{{ run_id }}",
+                "action": "{{ action }}",
+                "status": "Success",
+                "message": "Connection successful"
+              }
+            dest: "{{ status_file }}"
+
+      rescue:
+        - name: Update status - Failed
+          copy:
+            content: |
+              {
+                "runId": "{{ run_id }}",
+                "action": "{{ action }}",
+                "status": "Failed",
+                "message": "Connection failed: {{ ansible_failed_result.msg | default('Unknown error') }}"
+              }
+            dest: "{{ status_file }}"
+
+        - name: Fail the playbook
+          fail:
+            msg: "Connection test failed"
+
+

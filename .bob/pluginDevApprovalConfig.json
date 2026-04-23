@@ -1,0 +1,55 @@
+{
+  "title": "Plugin Development Approval Configuration",
+  "description": "Configure which approval points Bob should ask for user confirmation. Set 'enabled: true' to ask, 'enabled: false' to proceed automatically.",
+  "version": "1.0.0",
+  
+  "mcp_tool_failure_fallback": {
+    "enabled": true,
+    "description": "Ask user to choose fallback method when MCP tool (search_ansible_galaxy_collections) fails"
+  },
+  
+  "collection_already_exists": {
+    "enabled": true,
+    "description": "Ask user whether to use existing collection or download latest when collection already exists in venv"
+  },
+  
+  "authentication_method_selection": {
+    "enabled": true,
+    "description": "Ask user to select authentication method after analyzing available options from integration source"
+  },
+  
+  "test_data_option": {
+    "enabled": true,
+    "description": "Ask user to choose between providing test credentials or mock data files"
+  },
+  
+  "playbook_retry_after_failure": {
+    "enabled": false,
+    "description": "Ask user whether to retry after playbook failure (if false, auto-retry up to 3 times for playbook issues, stop immediately for credential issues)"
+  },
+  
+  "transformation_validation_retry": {
+    "enabled": false,
+    "description": "Ask user whether to retry after transformation validation failure (if false, auto-retry with fixes)"
+  },
+  
+  "ui_schema_field_confirmation": {
+    "enabled": false,
+    "description": "Ask user to confirm each field before adding to UI schema (if false, auto-generate based on playbook analysis)"
+  },
+  
+  "deployment_confirmation": {
+    "enabled": true,
+    "description": "Ask user to confirm deployment to GCM after packaging"
+  },
+  
+  "proceed_to_next_phase": {
+    "enabled": false,
+    "description": "Ask user to confirm before proceeding to next phase (if false, auto-proceed after successful completion)"
+  },
+  
+  "checkpoint_update_notification": {
+    "enabled": false,
+    "description": "Notify user after updating CHECKPOINT.md (if false, update silently)"
+  }
+}

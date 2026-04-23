@@ -1,0 +1,10 @@
+{
+  "ibm-bob-config": {
+    "logLevel": "debug",
+    "findings": {
+      "bobTips": { "enabled": false },
+      "secrets": { "enabled": false },
+      "semgrep": { "enabled": false }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+# OS files
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python artifacts
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+uv.lock
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test files
+CHECKPOINT.md
+test_output/
+**/molecule/
+**/.molecule/
+*.log
+*_test.json
+test_config.json
+env.yaml
+inventory.ini
+pyproject.toml
+ansible_collections/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Ansible lint
+.ansible-lint
+ansible-lint.yml
+
+# Build artifacts
+*.zip
+
+# Bob configuration
+.bob/
+
+package.ps1
+package.sh

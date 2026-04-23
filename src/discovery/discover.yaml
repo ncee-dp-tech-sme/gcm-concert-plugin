@@ -1,0 +1,78 @@
+---
+- name: Discover Assets from Target System
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Initialize discovery
+      block:
+        # Configuration is passed directly via --extra-vars by GCM
+        # For discovery, GCM passes full structure with pluginConfig.integration array
+        - name: Initialize variables
+          set_fact:
+            out_dir: "{{ out_dir }}"
+            status_file: "{{ out_dir }}/{{ status_file_name }}"
+            config_list: "{{ pluginConfig.integration }}"
+
+        - name: Create output directory
+          file:
+            path: "{{ out_dir }}"
+            state: directory
+            mode: '0755'
+
+        - name: Initialize counters
+          set_fact:
+            total_instances: "{{ pluginConfig.integration | length | int }}"
+            successful_instances: "0"
+            failed_instances: "0"
+            total_assets: "0"
+
+    # Process each integration instance using include_tasks
+    # This allows proper error handling per instance with block/rescue
+    - name: Process each integration instance
+      include_tasks: process_instance.yaml
+      loop: "{{ pluginConfig.integration }}"
+      loop_control:
+        loop_var: instance
+        index_var: instance_index
+
+    - name: Generate final summary
+      block:
+        - name: Find all output files
+          find:
+            paths: "{{ out_dir }}"
+            patterns: "crypto_asset_details_*.json"
+          register: output_files
+
+        - name: Update final status
+          copy:
+            content: |
+              {
+                "runId": "{{ run_id }}",
+                "action": "{{ action }}",
+                "status": "Success",
+                "message": "Discovery completed",
+                "fileFormat": "json",
+                "outputFiles": {{ output_files.files | map(attribute='path') | list | to_json }},
+                "details": {
+                  "total_instances": {{ total_instances }},
+                  "successful_instances": {{ successful_instances }},
+                  "failed_instances": {{ failed_instances }},
+                  "total_assets_discovered": {{ total_assets }}
+                }
+              }
+            dest: "{{ status_file }}"
+
+      rescue:
+        - name: Update failure status
+          copy:
+            content: |
+              {
+                "runId": "{{ run_id }}",
+                "action": "{{ action }}",
+                "status": "Failed",
+                "message": "Discovery failed: {{ ansible_failed_result.msg | default('Unknown error') }}"
+              }
+            dest: "{{ status_file }}"
+
+

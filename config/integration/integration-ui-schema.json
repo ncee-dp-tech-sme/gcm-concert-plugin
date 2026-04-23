@@ -1,0 +1,10 @@
+{
+  "ui:order": [
+    "hostname"
+  ],
+  "hostname": {
+    "ui:widget": "text",
+    "ui:placeholder": "Enter hostname",
+    "ui:help": "Enter the service URL or hostname"
+  }
+}

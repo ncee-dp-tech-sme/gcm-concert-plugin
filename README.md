@@ -1,0 +1,1 @@
+## GCM AIM Custom Adaptor

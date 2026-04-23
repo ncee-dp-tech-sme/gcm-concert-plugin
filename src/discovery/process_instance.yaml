@@ -1,0 +1,79 @@
+---
+# Helper file to process discovery for a single integration instance
+# This file is included by discover.yaml with loop_var: instance
+# Access instance configuration fields via {{ instance.field_name }}
+
+- name: Process discovery for instance
+  block:
+    - name: Update status - processing
+      copy:
+        content: |
+          {
+            "runId": "{{ run_id }}",
+            "action": "{{ action }}",
+            "status": "InProgress",
+            "message": "Discovering assets from instance {{ instance_index + 1 }}"
+          }
+        dest: "{{ out_dir }}/{{ status_file_name }}"
+
+    # Replace this task with the appropriate collection module call(s) to fetch assets.
+    # Refer to the collection documentation for the correct module and parameters.
+    # Access configuration fields via instance variable (e.g., {{ instance.url }}, {{ instance.apiKey }})
+    - name: Example - Process instance
+      ansible.builtin.debug:
+        msg: "Processing instance: {{ instance.url | default('target system') }}"
+
+    # TODO: Replace with actual asset discovery
+    # For collection-based approach:
+    # - name: Fetch assets using collection module
+    #   <namespace>.<collection>.<module>:
+    #     <param1>: "{{ instance.<field1> }}"
+    #     <param2>: "{{ instance.<field2> }}"
+    #   register: fetch_result
+    #   no_log: true
+    #
+    # - name: Write asset output files
+    #   copy:
+    #     content: "{{ asset | to_nice_json }}"
+    #     dest: "{{ out_dir }}/crypto_asset_details_{{ instance_index }}_{{ asset_index }}.json"
+    #   loop: "{{ fetch_result.<assets_field> }}"
+    #   loop_control:
+    #     loop_var: asset
+    #     index_var: asset_index
+    #
+    # For API-based approach:
+    # - name: Fetch assets from API
+    #   uri:
+    #     url: "{{ instance.url }}/api/certificates"
+    #     method: GET
+    #     headers:
+    #       Authorization: "Bearer {{ instance.apiKey }}"
+    #     validate_certs: "{{ instance.verifySsl | default(true) }}"
+    #     status_code: [200]
+    #   register: api_response
+    #   no_log: true
+    #
+    # - name: Write asset output files
+    #   copy:
+    #     content: "{{ asset | to_nice_json }}"
+    #     dest: "{{ out_dir }}/crypto_asset_details_{{ instance_index }}_{{ asset_index }}.json"
+    #   loop: "{{ api_response.json.certificates }}"
+    #   loop_control:
+    #     loop_var: asset
+    #     index_var: asset_index
+
+    - name: Update counters
+      set_fact:
+        total_assets: "{{ (total_assets | int) + 0 }}"
+        successful_instances: "{{ (successful_instances | int) + 1 }}"
+
+  rescue:
+    - name: Update failed counter
+      set_fact:
+        failed_instances: "{{ (failed_instances | int) + 1 }}"
+
+    - name: Log error
+      debug:
+        msg: "Discovery failed for instance {{ instance_index }}: {{ ansible_failed_result.msg | default(ansible_failed_result | string) }}"
+
+

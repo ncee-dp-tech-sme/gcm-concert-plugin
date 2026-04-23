@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Discovery",
+            "type": "node",
+            "request": "launch",
+            "program": "ansible-playbook",
+            "args": [],
+            "console": "integratedTerminal"
+        }
+    ]
+}
