@@ -10,7 +10,7 @@
         },
         "transform_declarations": {
           "FINAL_OUTPUT": {
-            "xpath": ".[?(@.subject)]",
+            "xpath": ".",
             "object": {
               "category": {
                 "const": "CRYPTO_OBJECT"
@@ -240,7 +240,7 @@
         },
         "transform_declarations": {
           "FINAL_OUTPUT": {
-            "xpath": ".[?(@.host)]",
+            "xpath": ".",
             "object": {
               "category": {
                 "const": "IT_ASSET"
@@ -249,7 +249,17 @@
                 "const": "IT_ASSET"
               },
               "uri": {
-                "xpath": "host"
+                "custom_func": {
+                  "name": "skip_on_missing_field",
+                  "args": [
+                    {
+                      "xpath": "host"
+                    },
+                    {
+                      "const": "message:Skipped - not an IT asset file (missing host field)"
+                    }
+                  ]
+                }
               },
               "hostname": {
                 "custom_func": {

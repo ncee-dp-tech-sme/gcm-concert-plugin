@@ -235,12 +235,18 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.3 (2026-04-24)
+- **Bug Fix**: Reverted XPath predicate approach (not supported by GCM Omniparser)
+  - Removed invalid XPath syntax `.[?(@.subject)]` and `.[?(@.host)]`
+  - Added `skip_on_missing_field` to IT asset `uri` field to skip certificate files
+  - Certificate transformation already has `skip_on_missing_field` on required fields
+  - Both transformations now use simple `"xpath": "."` with field-level skipping
+  - Resolves schema validation error: `'FINAL_OUTPUT.xpath' (value: '.[?(@.subject)]') is invalid`
+
 ### 1.1.2 (2026-04-24)
-- **Bug Fix**: Added conditional XPath filters to prevent cross-transformation errors
-  - Certificate transformation now uses `.[?(@.subject)]` to only process certificate files
-  - IT Asset transformation now uses `.[?(@.host)]` to only process IT asset files
-  - Prevents transformation failures when GCM applies all transformations to all files
-  - Resolves error: `'FINAL_OUTPUT.hostname.custom_func(javascript)' failed: result is null`
+- **Bug Fix**: Attempted conditional XPath filters (reverted in 1.1.3)
+  - XPath predicate syntax not supported by GCM Omniparser
+  - Caused schema validation errors
 
 ### 1.1.1 (2026-04-24)
 - **Bug Fix**: Corrected transformation file structure
