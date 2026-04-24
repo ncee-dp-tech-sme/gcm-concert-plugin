@@ -210,6 +210,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.3 (2026-04-24)
+- **Bug Fix**: Fixed data type and validation issues
+  - Changed `certificate_serial_number` from int to string to handle large serial numbers
+  - Added `Array.isArray()` check in relationships JavaScript to prevent map errors
+  - Resolves "value out of range" error for large serial numbers
+  - Resolves "Object has no member 'map'" error in relationships transformation
+
 ### 1.0.2 (2026-04-24)
 - **Bug Fix**: Fixed transformation schema structure
   - Added required `transformation_list` wrapper array

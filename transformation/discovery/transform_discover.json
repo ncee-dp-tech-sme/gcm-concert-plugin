@@ -45,8 +45,7 @@
                 }
               },
               "certificate_serial_number": {
-                "xpath": "serial_number",
-                "type": "int"
+                "xpath": "serial_number"
               },
               "userId": {
                 "xpath": "last_updated_by"
@@ -215,7 +214,7 @@
                   "name": "javascript",
                   "args": [
                     {
-                      "const": "(function() { if (!accessPoints || accessPoints.length === 0) return []; return accessPoints.map(function(ap) { return { asset_type: 'IT_ASSET', asset_identifiers: { uri: ap.host_name } }; }); })()"
+                      "const": "(function() { if (!accessPoints || !Array.isArray(accessPoints) || accessPoints.length === 0) return []; return accessPoints.map(function(ap) { return { asset_type: 'IT_ASSET', asset_identifiers: { uri: ap.host_name } }; }); })()"
                     },
                     {
                       "const": "accessPoints"
