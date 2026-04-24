@@ -1,0 +1,234 @@
+{
+  "transformation_list": [
+    {
+      "format": "json",
+      "yields": "certificate",
+      "transformation": {
+        "parser_settings": {
+          "file_format_type": "json",
+          "version": "omni.2.1"
+        },
+        "transform_declarations": {
+          "FINAL_OUTPUT": {
+            "xpath": ".",
+            "object": {
+              "category": {
+                "const": "CRYPTO_OBJECT"
+              },
+              "asset_type": {
+                "const": "CRYPTO_OBJECT.CERTIFICATE"
+              },
+              "subject": {
+                "custom_func": {
+                  "name": "skip_on_missing_field",
+                  "args": [
+                    {
+                      "xpath": "subject"
+                    },
+                    {
+                      "const": "message:Skipped - subject is missing"
+                    }
+                  ]
+                }
+              },
+              "issuer": {
+                "custom_func": {
+                  "name": "skip_on_missing_field",
+                  "args": [
+                    {
+                      "xpath": "issuer"
+                    },
+                    {
+                      "const": "message:Skipped - issuer is missing"
+                    }
+                  ]
+                }
+              },
+              "certificate_serial_number": {
+                "xpath": "serial_number"
+              },
+              "userId": {
+                "xpath": "last_updated_by"
+              },
+              "not_before": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { if (!timestamp) return ''; const date = new Date(timestamp * 1000); return date.toISOString(); })()"
+                    },
+                    {
+                      "const": "timestamp"
+                    },
+                    {
+                      "xpath": "validity_start_date"
+                    }
+                  ]
+                }
+              },
+              "not_after": {
+                "custom_func": {
+                  "name": "skip_on_missing_field",
+                  "args": [
+                    {
+                      "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                          {
+                            "const": "(function() { if (!timestamp) return ''; const date = new Date(timestamp * 1000); return date.toISOString(); })()"
+                          },
+                          {
+                            "const": "timestamp"
+                          },
+                          {
+                            "xpath": "validity_end_date"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "const": "message:Skipped - validity_end_date is missing"
+                    }
+                  ]
+                }
+              },
+              "san": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { if (!dnsNames || dnsNames === '') return []; return dnsNames.split(',').map(function(name) { return { type_id: 'DNS', value: name.trim() }; }); })()"
+                    },
+                    {
+                      "const": "dnsNames"
+                    },
+                    {
+                      "xpath": "dns_names"
+                    }
+                  ]
+                }
+              },
+              "crypto_object_name": {
+                "custom_func": {
+                  "name": "concat",
+                  "args": [
+                    {
+                      "xpath": "subject"
+                    },
+                    {
+                      "const": " ("
+                    },
+                    {
+                      "xpath": "environment_name"
+                    },
+                    {
+                      "const": ")"
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "custom_func": {
+                  "name": "concat",
+                  "args": [
+                    {
+                      "const": "IBM Concert Certificate - Environment: "
+                    },
+                    {
+                      "xpath": "environment_name"
+                    },
+                    {
+                      "const": " ("
+                    },
+                    {
+                      "xpath": "environment_type"
+                    },
+                    {
+                      "const": "), Cluster: "
+                    },
+                    {
+                      "xpath": "cluster_name"
+                    }
+                  ]
+                }
+              },
+              "discovery_sources": {
+                "array": [
+                  {
+                    "external": "profile_id"
+                  }
+                ]
+              },
+              "metadata": {
+                "object": {
+                  "concert_certificate_id": {
+                    "xpath": "id"
+                  },
+                  "concert_environment_id": {
+                    "xpath": "environment_id"
+                  },
+                  "concert_environment_name": {
+                    "xpath": "environment_name"
+                  },
+                  "concert_environment_type": {
+                    "xpath": "environment_type"
+                  },
+                  "concert_cluster_name": {
+                    "xpath": "cluster_name"
+                  },
+                  "concert_status": {
+                    "xpath": "status"
+                  },
+                  "concert_namespaces": {
+                    "xpath": "namespaces"
+                  },
+                  "concert_is_archived": {
+                    "xpath": "is_archived"
+                  },
+                  "concert_with_open_tickets": {
+                    "xpath": "with_open_tickets"
+                  },
+                  "concert_last_updated_by": {
+                    "xpath": "last_updated_by"
+                  },
+                  "concert_last_updated_on": {
+                    "custom_func": {
+                      "name": "javascript",
+                      "args": [
+                        {
+                          "const": "(function() { if (!timestamp) return ''; const date = new Date(timestamp * 1000); return date.toISOString(); })()"
+                        },
+                        {
+                          "const": "timestamp"
+                        },
+                        {
+                          "xpath": "last_updated_on"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "relationships": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { if (!accessPoints || !Array.isArray(accessPoints) || accessPoints.length === 0) return []; return accessPoints.map(function(ap) { return { asset_type: 'IT_ASSET', asset_identifiers: { uri: ap.host_name } }; }); })()"
+                    },
+                    {
+                      "const": "accessPoints"
+                    },
+                    {
+                      "xpath": "access_points"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

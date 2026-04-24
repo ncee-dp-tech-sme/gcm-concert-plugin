@@ -235,12 +235,19 @@ For issues or questions:
 
 ## Version History
 
+### 1.2.0 (2026-04-24)
+- **Major Fix**: Separated transformations into dedicated files to prevent cross-contamination
+  - Created `transform_certificates.json` - Only processes certificate files
+  - Created `transform_it_assets.json` - Only processes IT asset files
+  - Updated manifest.json to reference both transformation files as array
+  - **Root Cause**: GCM evaluates ALL fields in ALL transformations before checking skip conditions
+  - **Solution**: Separate transformation files ensure each file type is processed by correct transformation only
+  - Eliminates JavaScript null reference errors when certificate files are processed by IT asset transformation
+  - This is the proper architectural solution for multi-asset-type discovery plugins
+
 ### 1.1.6 (2026-04-24)
-- **Bug Fix**: Removed null checks from JavaScript functions - rely on skip_on_missing_field at uri level
-  - Reverted JavaScript null checks (they didn't prevent field evaluation)
-  - GCM evaluates all fields even when skip_on_missing_field triggers on uri
-  - Root cause: GCM processes all fields before checking skip conditions
-  - Solution: Simplified JavaScript functions, let skip_on_missing_field handle record skipping
+- **Bug Fix**: Attempted to remove null checks (did not work)
+  - GCM still evaluated all fields regardless of skip_on_missing_field
 
 ### 1.1.5 (2026-04-24)
 - **Bug Fix**: Attempted to add null checks inside JavaScript functions (did not work)
