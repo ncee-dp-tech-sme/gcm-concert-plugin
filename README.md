@@ -235,15 +235,17 @@ For issues or questions:
 
 ## Version History
 
+### 1.2.1 (2026-04-24)
+- **Fix**: Reverted to single transformation file with transformation_list array
+  - GCM manifest schema does not support array for transformation field
+  - Combined both transformations in `transform_discover.json` with transformation_list array
+  - Each transformation has its own `yields` field (certificate/it-asset)
+  - Separate transformation files kept for reference but not packaged
+  - This maintains the separation of concerns while conforming to GCM schema
+
 ### 1.2.0 (2026-04-24)
-- **Major Fix**: Separated transformations into dedicated files to prevent cross-contamination
-  - Created `transform_certificates.json` - Only processes certificate files
-  - Created `transform_it_assets.json` - Only processes IT asset files
-  - Updated manifest.json to reference both transformation files as array
-  - **Root Cause**: GCM evaluates ALL fields in ALL transformations before checking skip conditions
-  - **Solution**: Separate transformation files ensure each file type is processed by correct transformation only
-  - Eliminates JavaScript null reference errors when certificate files are processed by IT asset transformation
-  - This is the proper architectural solution for multi-asset-type discovery plugins
+- **Attempted Fix**: Tried separate transformation files (reverted in 1.2.1)
+  - GCM manifest schema validation failed: "found a list, want object"
 
 ### 1.1.6 (2026-04-24)
 - **Bug Fix**: Attempted to remove null checks (did not work)

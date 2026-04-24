@@ -47,8 +47,9 @@ inventory.ini
 pyproject.toml
 ansible_collections/
 
-# Deprecated transformation files (v1.2.0+)
-transformation/discovery/transform_discover.json
+# Separate transformation files (kept for reference, not packaged)
+transformation/discovery/transform_certificates.json
+transformation/discovery/transform_it_assets.json
 
 # CI/CD
 .github/
