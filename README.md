@@ -235,12 +235,18 @@ For issues or questions:
 
 ## Version History
 
-### 1.1.4 (2026-04-24)
-- **Bug Fix**: Wrapped all IT asset JavaScript custom functions with skip_on_missing_field
-  - Added skip_on_missing_field wrapper to hostname, protocol, and port fields
-  - Prevents JavaScript execution errors when processing certificate files
+### 1.1.5 (2026-04-24)
+- **Bug Fix**: Fixed JavaScript null reference errors in IT asset transformation
+  - Moved null checks INSIDE JavaScript functions instead of wrapping with skip_on_missing_field
+  - Added `if (!host) return ''` checks at start of hostname, protocol JavaScript functions
+  - Added `if (!host) return null` check at start of port JavaScript function
+  - Prevents JavaScript execution errors when certificate files (without host field) are processed
   - Resolves error: `'FINAL_OUTPUT.hostname.custom_func(javascript)' failed: result is null`
-  - All IT asset fields that depend on `host` now properly skip when host is missing
+
+### 1.1.4 (2026-04-24)
+- **Bug Fix**: Attempted to wrap JavaScript functions with skip_on_missing_field (did not work)
+  - Issue: skip_on_missing_field checks result after JavaScript executes, not before
+  - JavaScript still executed and returned null, causing errors
 
 ### 1.1.3 (2026-04-24)
 - **Bug Fix**: Reverted XPath predicate approach (not supported by GCM Omniparser)

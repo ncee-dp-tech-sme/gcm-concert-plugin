@@ -2,7 +2,7 @@
   "code": "ibm-concert-discovery",
   "title": "IBM Concert Discovery",
   "description": "Discovery plugin for IBM Concert. Discovers certificates and IT assets (access points) across multiple Concert environments with environment context enrichment.",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "type": "external",
   "category": [
     "DISCOVERY"
