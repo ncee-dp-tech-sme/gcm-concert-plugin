@@ -1,0 +1,88 @@
+---
+- name: Test IBM Concert Access Points with Query Parameters
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    server_url: "https://65879.us-south-8.concert.saas.ibm.com"
+    api_key: "ZXJ3aW4uZnJpZXRob2ZmQG5sLmlibS5jb206YzMwYWZmNWUtMzM1Zi00ZTIwLTgyMzgtYzU4ZDc5ZmEzOWMx"
+    instance_id: "20240826-1930-2047-8140-78cf45ec64dc"
+    # From your browser URL
+    app_id: "546fe380-e817-4bd2-9cf5-28dc5f67ccb0"
+    env_id: "1f52e9ad-955a-4867-992a-0c79ff01658a"
+
+  tasks:
+    - name: Test access points with full query parameters (from browser)
+      uri:
+        url: "{{ server_url }}/concert/core/api/v1/applications/{{ app_id }}/environments/{{ env_id }}/access_points?page_number=1&page_size=50&sort_by=name&sort_direction=ASC"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: access_points_full
+
+    - name: Display access points
+      debug:
+        msg: "Found {{ access_points_full.json.access_points | default([]) | length }} access points"
+
+    - name: Save access points response
+      copy:
+        content: "{{ access_points_full.json | to_nice_json }}"
+        dest: "./test_access_points_full.json"
+
+    - name: Display first access point details
+      debug:
+        var: access_points_full.json.access_points[0]
+      when: access_points_full.json.access_points | default([]) | length > 0
+
+    - name: Test all applications to find which have access points
+      uri:
+        url: "{{ server_url }}/core/api/v1/applications?page_size=100"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: all_apps
+
+    - name: Check access points for each application
+      uri:
+        url: "{{ server_url }}/concert/core/api/v1/applications/{{ item.id }}/environments/{{ env_id }}/access_points?page_number=1&page_size=50"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: app_access_points
+      loop: "{{ all_apps.json.applications }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Summarize access points per application
+      debug:
+        msg: "{{ item.item.name }}: {{ item.json.access_points | default([]) | length }} access points"
+      loop: "{{ app_access_points.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Save all access points data
+      copy:
+        content: |
+          {% for result in app_access_points.results %}
+          Application: {{ result.item.name }} ({{ result.item.id }})
+          Access Points: {{ result.json.access_points | default([]) | length }}
+          {% if result.json.access_points | default([]) | length > 0 %}
+          {{ result.json | to_nice_json }}
+          {% endif %}
+          ---
+          {% endfor %}
+        dest: "./test_all_access_points_summary.txt"
+
+# Made with Bob

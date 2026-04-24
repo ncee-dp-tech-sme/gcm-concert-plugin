@@ -1,0 +1,85 @@
+---
+# Helper file to fetch access points for a single application in an environment
+# This file is included by process_instance.yaml with loop_var: app_env_combo
+# Access data via {{ app_env_combo.application_id }}, {{ app_env_combo.environment_id }}, etc.
+
+- name: Fetch access points for application {{ app_env_combo.application_name | default(app_env_combo.application_id) }} in environment {{ app_env_combo.environment_name | default(app_env_combo.environment_id) }}
+  block:
+    - name: Initialize pagination variables for access points
+      set_fact:
+        current_page: 1
+        has_more_pages: true
+        application_access_points: []
+
+    - name: Fetch access points with pagination
+      block:
+        - name: Fetch access point page
+          uri:
+            url: "{{ instance.server_url }}/concert/core/api/v1/applications/{{ app_env_combo.application_id }}/environments/{{ app_env_combo.environment_id }}/access_points?page_number={{ current_page }}&page_size=100&sort_by=name&sort_direction=ASC"
+            method: GET
+            headers:
+              Authorization: "C_API_KEY {{ instance.api_key }}"
+              InstanceId: "{{ instance.instance_id }}"
+              Accept: "application/json"
+            validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+            status_code: [200]
+          register: access_points_response
+          no_log: true
+
+        - name: Extract access points from response
+          set_fact:
+            page_access_points: "{{ access_points_response.json.access_points | default([]) }}"
+            total_pages: "{{ access_points_response.json.pagination.total_pages | default(1) }}"
+
+        - name: Append access points to application list
+          set_fact:
+            application_access_points: "{{ application_access_points + page_access_points }}"
+
+        - name: Check if more pages exist
+          set_fact:
+            has_more_pages: "{{ (current_page | int) < (total_pages | int) }}"
+            current_page: "{{ (current_page | int) + 1 }}"
+
+        - name: Continue pagination if needed
+          include_tasks: fetch_application_access_points.yaml
+          when: has_more_pages | bool
+
+      when: has_more_pages | bool
+
+    - name: Enrich access points with application and environment context
+      set_fact:
+        enriched_access_points: >-
+          {{
+            application_access_points | map('combine', {
+              'application_id': app_env_combo.application_id,
+              'application_name': app_env_combo.application_name | default(''),
+              'environment_id': app_env_combo.environment_id,
+              'environment_name': app_env_combo.environment_name | default(''),
+              'environment_type': app_env_combo.environment_type | default('')
+            }) | list
+          }}
+
+    - name: Write IT asset output files
+      copy:
+        content: "{{ access_point | to_nice_json }}"
+        dest: "{{ out_dir }}/it_asset_details_{{ instance_index }}_{{ app_env_index }}_{{ access_point_index }}.json"
+      loop: "{{ enriched_access_points }}"
+      loop_control:
+        loop_var: access_point
+        index_var: access_point_index
+      when: enriched_access_points | length > 0
+
+    - name: Update IT asset counter
+      set_fact:
+        instance_it_asset_count: "{{ (instance_it_asset_count | int) + (enriched_access_points | length) }}"
+
+  rescue:
+    - name: Log access point fetch error
+      debug:
+        msg: "Failed to fetch access points for application {{ app_env_combo.application_id }} in environment {{ app_env_combo.environment_id }}: {{ ansible_failed_result.msg | default('Unknown error') }}"
+
+    - name: Continue with next application despite error
+      set_fact:
+        instance_it_asset_count: "{{ instance_it_asset_count | int }}"
+
+# Made with Bob

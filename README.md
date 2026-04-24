@@ -2,15 +2,17 @@
 
 ## Overview
 
-This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inventory certificates from IBM Concert environments. IBM Concert is a hybrid cloud management platform that tracks certificates across multiple Kubernetes and OpenShift clusters.
+This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inventory both certificates and IT assets (access points) from IBM Concert environments. IBM Concert is a hybrid cloud management platform that tracks certificates and application endpoints across multiple Kubernetes and OpenShift clusters.
 
 ## Features
 
-- **Multi-Environment Discovery**: Automatically discovers certificates across all IBM Concert environments (dev, prod, qa, stage, etc.)
-- **Environment Context**: Enriches certificate data with environment metadata (environment ID, name, type, cluster information)
-- **IT Asset Relationships**: Maps certificates to their access points (hostnames and ports) for complete infrastructure visibility
+- **Multi-Environment Discovery**: Automatically discovers certificates and IT assets across all IBM Concert environments (dev, prod, qa, stage, etc.)
+- **IT Asset Discovery**: Discovers application access points (endpoints/hostnames) with protocol, port, and application context
+- **Environment Context**: Enriches both certificate and IT asset data with environment metadata (environment ID, name, type, cluster information)
+- **Certificate-to-IT Asset Relationships**: Maps certificates to their access points (hostnames and ports) for complete infrastructure visibility
 - **Certificate Metadata**: Captures comprehensive certificate details including subject, issuer, serial number, validity dates, and DNS names
 - **Issue Tracking Integration**: Includes information about open tickets linked to certificates in external systems (ServiceNow, Jira)
+- **Application Context**: Links IT assets to their parent applications for better organization and tracking
 
 ## Prerequisites
 
@@ -47,17 +49,28 @@ This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inve
 
 ### Discovery Process
 
-1. **Environment Discovery**: The plugin first fetches all environments from IBM Concert using the `/core/api/v1/environments` API endpoint
+1. **Environment Discovery**: The plugin first fetches all environments from IBM Concert using the `/concert/core/api/v1/environments` API endpoint
 
-2. **Certificate Discovery**: For each environment, the plugin fetches all certificates using the `/core/api/v1/certificates?environment_id={id}` endpoint
+2. **Application Discovery**: Fetches all applications from IBM Concert using the `/concert/core/api/v1/applications` endpoint
 
-3. **Data Enrichment**: Each certificate is enriched with:
-   - Environment context (ID, name, type)
-   - Cluster information
-   - Access point details (hostnames and ports)
-   - Issue tracking information
+3. **Certificate Discovery**: For each environment, the plugin fetches all certificates using the `/concert/core/api/v1/certificates?environment_id={id}` endpoint
 
-4. **Transformation**: Certificate data is transformed to GCM's standard format using Omniparser rules
+4. **IT Asset Discovery**: For each application-environment combination, fetches access points using the `/concert/core/api/v1/applications/{app_id}/environments/{env_id}/access_points` endpoint
+
+5. **Data Enrichment**:
+   - **Certificates** are enriched with:
+     - Environment context (ID, name, type)
+     - Cluster information
+     - Access point details (hostnames and ports)
+     - Issue tracking information
+   
+   - **IT Assets** are enriched with:
+     - Application context (ID, name)
+     - Environment context (ID, name, type)
+     - Endpoint details (protocol, hostname, port)
+     - Public/private access indicators
+
+6. **Transformation**: Both certificate and IT asset data are transformed to GCM's standard format using Omniparser rules
 
 ### API Authentication
 
@@ -114,9 +127,16 @@ Both headers are required for all API requests.
 ### Discovered Assets
 
 The plugin discovers:
-- **Certificates**: X.509 certificates with full metadata
-- **IT Assets**: Hostnames and ports where certificates are deployed
-- **Relationships**: Mappings between certificates and IT assets
+- **Certificates**: X.509 certificates with full metadata and environment context
+- **IT Assets**: Application access points (endpoints) with:
+  - Hostname/URL
+  - Protocol (HTTP/HTTPS)
+  - Port number
+  - Application name and ID
+  - Environment name and type
+  - Public/private access indicator
+  - Endpoint paths
+- **Relationships**: Mappings between certificates and IT assets for infrastructure visibility
 
 ## Certificate Metadata
 
@@ -190,10 +210,15 @@ Each discovered certificate includes:
 
 ## API Endpoints Used
 
-- `GET /core/api/v1/environments` - List all environments
-- `GET /core/api/v1/certificates?environment_id={id}` - List certificates per environment
+### Certificate Discovery
+- `GET /concert/core/api/v1/environments` - List all environments
+- `GET /concert/core/api/v1/certificates?environment_id={id}` - List certificates per environment
 
-Both endpoints support pagination with `page_size` and `page_number` parameters (up to 2000 items per page).
+### IT Asset Discovery
+- `GET /concert/core/api/v1/applications` - List all applications
+- `GET /concert/core/api/v1/applications/{app_id}/environments/{env_id}/access_points` - List access points per application-environment
+
+All endpoints support pagination with `page_size` and `page_number` parameters (up to 2000 items per page).
 
 ## Limitations
 
@@ -209,6 +234,18 @@ For issues or questions:
 3. Contact IBM Support with plugin version and error details
 
 ## Version History
+
+### 1.1.0 (2026-04-24)
+- **New Feature**: IT Asset Discovery
+  - Added discovery of application access points (endpoints) from IBM Concert
+  - Discovers hostnames, protocols, ports, and endpoint paths
+  - Links IT assets to applications and environments
+  - Includes public/private access indicators
+  - Creates relationships between certificates and IT assets
+- **Enhancement**: Multi-asset type discovery
+  - Plugin now discovers both certificates and IT assets in a single run
+  - Separate transformation rules for each asset type
+  - Improved data enrichment with application context
 
 ### 1.0.3 (2026-04-24)
 - **Bug Fix**: Fixed data type and validation issues

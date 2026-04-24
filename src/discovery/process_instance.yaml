@@ -46,12 +46,43 @@
           }
         dest: "{{ out_dir }}/{{ status_file_name }}"
 
-    # Step 2: Initialize asset counter for this instance
-    - name: Initialize instance asset counter
+    # Step 2: Fetch all applications from IBM Concert
+    - name: Fetch applications from IBM Concert
+      uri:
+        url: "{{ instance.server_url }}/core/api/v1/applications?page_size=2000"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ instance.api_key }}"
+          InstanceId: "{{ instance.instance_id }}"
+          Accept: "application/json"
+        validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+        status_code: [200]
+      register: applications_response
+      no_log: true
+
+    - name: Initialize application list
+      set_fact:
+        all_applications: "{{ applications_response.json.applications | default([]) }}"
+        total_applications: "{{ (applications_response.json.applications | default([]) | length) }}"
+
+    - name: Update status - fetched applications
+      copy:
+        content: |
+          {
+            "runId": "{{ run_id }}",
+            "action": "{{ action }}",
+            "status": "InProgress",
+            "message": "Found {{ total_applications }} applications and {{ total_environments }} environments in instance {{ instance_index + 1 }}"
+          }
+        dest: "{{ out_dir }}/{{ status_file_name }}"
+
+    # Step 3: Initialize asset counters for this instance
+    - name: Initialize instance asset counters
       set_fact:
         instance_asset_count: 0
+        instance_it_asset_count: 0
 
-    # Step 3: Process each environment to fetch certificates
+    # Step 4: Process each environment to fetch certificates
     - name: Fetch certificates for each environment
       include_tasks: fetch_environment_certificates.yaml
       loop: "{{ all_environments }}"
@@ -59,9 +90,24 @@
         loop_var: concert_environment
         index_var: env_index
 
+    # Step 5: Process each application-environment combination to fetch access points (IT Assets)
+    - name: Fetch access points for each application in each environment
+      include_tasks: fetch_application_access_points.yaml
+      loop: "{{ all_applications | product(all_environments) | list }}"
+      loop_control:
+        loop_var: app_env_pair
+        index_var: app_env_index
+      vars:
+        app_env_combo:
+          application_id: "{{ app_env_pair[0].id }}"
+          application_name: "{{ app_env_pair[0].name }}"
+          environment_id: "{{ app_env_pair[1].id }}"
+          environment_name: "{{ app_env_pair[1].name }}"
+          environment_type: "{{ app_env_pair[1].type | default('') }}"
+
     - name: Update counters
       set_fact:
-        total_assets: "{{ (total_assets | int) + (instance_asset_count | int) }}"
+        total_assets: "{{ (total_assets | int) + (instance_asset_count | int) + (instance_it_asset_count | int) }}"
         successful_instances: "{{ (successful_instances | int) + 1 }}"
 
   rescue:

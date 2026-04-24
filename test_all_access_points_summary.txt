@@ -1,0 +1,342 @@
+Application: allegroapp (e03dc1c6-8941-4301-a56c-33907dfb2d3d)
+Access Points: 0
+---
+Application: bravoapp (09daf3ed-8008-459a-aca3-53f4cb7563a7)
+Access Points: 0
+---
+Application: ecommerce-app (546fe380-e817-4bd2-9cf5-28dc5f67ccb0)
+Access Points: 12
+{
+    "access_points": [
+        {
+            "bomref": "appapi:ShoppingAssistantService Portal",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/shoppingassistantservice/portal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/shoppingassistantservice/portal",
+            "id": "a199d86d-7e38-47cf-a4d0-15e0a0554cef",
+            "impacted_application_count": 1,
+            "is_public": true,
+            "name": "ShoppingAssistantService Portal",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:ShippingService Portal",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/shippingservice/portal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/shippingservice/portal",
+            "id": "5937c9f5-4093-47c4-bab2-8abe9c909b98",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "ShippingService Portal",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:RecommendationService Widget",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/recommendationservice/widget"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/recommendationservice/widget",
+            "id": "50edbd4a-3f04-4d43-a21d-0a41fc4a4a29",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "RecommendationService Widget",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:ProductCatalogue View",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/productcatalogservice/view"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/productcatalogservice/view",
+            "id": "9e371b0d-683b-48ab-a690-a260dbc5e084",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "ProductCatalogue View",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:PaymentService App",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/paymentservice/app"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/paymentservice/app",
+            "id": "d4314f4c-d2df-4bef-80fb-0706cfd88857",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "PaymentService App",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:LoadGenerator App",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/loadgenerator/app"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/loadgenerator/app",
+            "id": "2e89c781-99f6-41fe-9055-74fdfbbd35a0",
+            "impacted_application_count": 2,
+            "is_public": true,
+            "name": "LoadGenerator App",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:FrontEnd Console",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/frontend/console"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/frontend/console",
+            "id": "9915bf03-a421-405e-82bf-59fea7b6a142",
+            "impacted_application_count": 2,
+            "is_public": false,
+            "name": "FrontEnd Console",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:EmailService Vizualizer",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/emailservice/vizualizer"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/emailservice/vizualizer",
+            "id": "5a0b3aeb-30d0-4d46-89c5-eb1428274d81",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "EmailService Vizualizer",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:CurrencyService Panel",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/currencyservice/panel"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/currencyservice/panel",
+            "id": "f13b70f0-312d-4d0b-92a0-9b616ef9d47d",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "CurrencyService Panel",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:CheckOutService Portal",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/checkoutservice/portal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/checkoutservice/portal",
+            "id": "97beea9e-cef1-42b0-a100-ff29a1ea90c4",
+            "impacted_application_count": 1,
+            "is_public": true,
+            "name": "CheckOutService Portal",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:CartService Tracking Portal",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/cartservice/trackingportal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/cartservice/trackingportal",
+            "id": "4c5db87f-f8fd-4a71-926b-430bbec15dbf",
+            "impacted_application_count": 1,
+            "is_public": true,
+            "name": "CartService Tracking Portal",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:AdService Console",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/adservice/console"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/adservice/console",
+            "id": "8fa5253c-35c2-4690-841a-5a879946f2d2",
+            "impacted_application_count": 1,
+            "is_public": true,
+            "name": "AdService Console",
+            "tags": null
+        }
+    ],
+    "pagination": {
+        "page_number": 1,
+        "page_size": 50,
+        "total_count": 12,
+        "total_pages": 1
+    }
+}
+---
+Application: encoreapp (e1925ce5-388f-4875-9f5c-d9b20950ef08)
+Access Points: 0
+---
+Application: payment-app (5242e989-c628-477d-8a63-de00ed19b661)
+Access Points: 2
+{
+    "access_points": [
+        {
+            "bomref": "appapi:LoadGenerator App",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/loadgenerator/app"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/loadgenerator/app",
+            "id": "2e89c781-99f6-41fe-9055-74fdfbbd35a0",
+            "impacted_application_count": 2,
+            "is_public": true,
+            "name": "LoadGenerator App",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:FrontEnd Console",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.microservices-demo.com/frontend/console"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.microservices-demo.com/frontend/console",
+            "id": "9915bf03-a421-405e-82bf-59fea7b6a142",
+            "impacted_application_count": 2,
+            "is_public": false,
+            "name": "FrontEnd Console",
+            "tags": null
+        }
+    ],
+    "pagination": {
+        "page_number": 1,
+        "page_size": 50,
+        "total_count": 2,
+        "total_pages": 1
+    }
+}
+---
+Application: quote-of-the-day (cc3c4539-2ccd-435e-9971-4af8445a7a0b)
+Access Points: 0
+---
+Application: shipping-app (378f2a74-80ce-4816-a471-55dc8a63d7b4)
+Access Points: 4
+{
+    "access_points": [
+        {
+            "bomref": "appapi:redis-API",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.payment-app.com/account-registry/db"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.payment-app.com/account-registry/db",
+            "id": "889c2604-21da-4c45-a9fc-ca93a0bcd631",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "redis-API",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:WI-Secrets Console",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.payment-app.com/userservice/portal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.payment-app.com/userservice/portal",
+            "id": "719ed39d-13cb-4150-aa1e-c4033619f2ed",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "WI-Secrets Console",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:Shipping GKE Portal",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.payment-app.com/contact/console"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.payment-app.com/contact/console",
+            "id": "2c8c8c31-f40b-4cac-a210-f98e17cee2b9",
+            "impacted_application_count": 1,
+            "is_public": true,
+            "name": "Shipping GKE Portal",
+            "tags": null
+        },
+        {
+            "bomref": "appapi:Finetuning Gemma API",
+            "endpoints": {
+                "endpoints": [
+                    "https://wwww.payment-app.com/portal"
+                ]
+            },
+            "environment_id": "1f52e9ad-955a-4867-992a-0c79ff01658a",
+            "environment_name": "dev",
+            "host": "https://wwww.payment-app.com/portal",
+            "id": "3e2d69ad-9467-48db-bf88-6d51dc751497",
+            "impacted_application_count": 1,
+            "is_public": false,
+            "name": "Finetuning Gemma API",
+            "tags": null
+        }
+    ],
+    "pagination": {
+        "page_number": 1,
+        "page_size": 50,
+        "total_count": 4,
+        "total_pages": 1
+    }
+}
+---
+Application: virtuosoapp (b84e8110-dae1-428a-a248-f3d23066e8e0)
+Access Points: 0
+---

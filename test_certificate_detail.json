@@ -1,0 +1,68 @@
+{
+    "access_points": null,
+    "associations": {
+        "access_points": [],
+        "applications": [],
+        "build_artifacts": [],
+        "environments": [
+            {
+                "associations": {
+                    "access_points": null,
+                    "applications": null,
+                    "build_artifacts": null,
+                    "certificates": null,
+                    "libraries": null,
+                    "resources": null
+                },
+                "id": "d8b068f3-336f-4408-9d49-3033672448be",
+                "last_updated_by": "lniesz@hu.ibm.com",
+                "last_updated_on": 1726583335,
+                "name": "prod",
+                "platform_k8": "prod",
+                "purpose": "",
+                "sample": false,
+                "tags": [],
+                "type": "GKE"
+            }
+        ]
+    },
+    "auth_user_role": "viewer",
+    "cluster_name": "cluster-cp4i-emea",
+    "dns_names": "apic-egw-event-gw-client,apic-egw-event-gw-client-apic.cp4i-253015-1ea39f2197613090e80c4981ab6eab96-0000.eu-de.containers.appdomain.cloud",
+    "environment": {
+        "id": "d8b068f3-336f-4408-9d49-3033672448be",
+        "name": "prod"
+    },
+    "id": "caef5cb2-e9ed-4dfa-9650-c934308c998a",
+    "is_archived": false,
+    "issuer": "CN=ingress-ca",
+    "issues": [
+        {
+            "id": "caef5cb2-e9ed-4dfa-9650-c934308c998a",
+            "id_type": "certificate",
+            "issue_link": {
+                "assignees": [],
+                "issue_id": "INC0229277",
+                "labels": [],
+                "system": "service_now",
+                "url": "https://dev231050.service-now.com/now/nav/ui/classic/params/target/incident.do%3Fsys_id%3D15a157f183ffd21015fe1080deaad3c0"
+            },
+            "last_updated_on": 1739967578,
+            "opened_on": 1739967578,
+            "status": "Open"
+        }
+    ],
+    "last_updated_by": "salih.sipahi1@ibm.com",
+    "last_updated_on": 1736845484,
+    "metadata": "{\"api_server\": \"https://c102-e.eu-de.containers.cloud.ibm.com:32101\", \"cluster_name\": \"cluster-cp4i-emea\"}",
+    "namespaces": [
+        "apic"
+    ],
+    "serial_number": "98160310780183006672886319972501726338",
+    "status": "expired",
+    "subject": "CN=apic-egw-event-gw-client",
+    "table_data": null,
+    "validity_end_date": 1724004834,
+    "validity_start_date": 1678212834,
+    "with_open_tickets": true
+}

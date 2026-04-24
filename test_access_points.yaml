@@ -1,0 +1,108 @@
+---
+- name: Test IBM Concert Access Points API
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    server_url: "https://65879.us-south-8.concert.saas.ibm.com"
+    api_key: "ZXJ3aW4uZnJpZXRob2ZmQG5sLmlibS5jb206YzMwYWZmNWUtMzM1Zi00ZTIwLTgyMzgtYzU4ZDc5ZmEzOWMx"
+    instance_id: "20240826-1930-2047-8140-78cf45ec64dc"
+
+  tasks:
+    - name: Step 1 - Fetch all environments
+      uri:
+        url: "{{ server_url }}/core/api/v1/environments?page_size=100"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: environments_response
+
+    - name: Display environments
+      debug:
+        msg: "Found {{ environments_response.json.environments | length }} environments"
+
+    - name: Step 2 - Fetch applications for first environment
+      uri:
+        url: "{{ server_url }}/core/api/v1/applications?environment_id={{ environments_response.json.environments[0].id }}&page_size=100"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: applications_response
+      when: environments_response.json.environments | length > 0
+
+    - name: Display applications
+      debug:
+        msg: "Found {{ applications_response.json.applications | default([]) | length }} applications in environment {{ environments_response.json.environments[0].name }}"
+      when: applications_response is defined
+
+    - name: Save applications response
+      copy:
+        content: "{{ applications_response.json | to_nice_json }}"
+        dest: "./test_applications_response.json"
+      when: applications_response is defined
+
+    - name: Step 3 - Fetch access points for first application
+      uri:
+        url: "{{ server_url }}/core/api/v1/applications/{{ applications_response.json.applications[0].id }}/environments/{{ environments_response.json.environments[0].id }}/access_points"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: access_points_response
+      when: 
+        - applications_response is defined
+        - applications_response.json.applications | default([]) | length > 0
+
+    - name: Display access points
+      debug:
+        var: access_points_response.json
+      when: access_points_response is defined
+
+    - name: Save access points response
+      copy:
+        content: "{{ access_points_response.json | to_nice_json }}"
+        dest: "./test_access_points_response.json"
+      when: access_points_response is defined
+
+    - name: Step 4 - Try to get all applications across all environments
+      uri:
+        url: "{{ server_url }}/core/api/v1/applications?page_size=1000"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ api_key }}"
+          InstanceId: "{{ instance_id }}"
+          Accept: "application/json"
+        validate_certs: true
+        status_code: [200]
+      register: all_applications_response
+
+    - name: Display all applications
+      debug:
+        msg: "Found {{ all_applications_response.json.applications | default([]) | length }} total applications"
+
+    - name: Save all applications response
+      copy:
+        content: "{{ all_applications_response.json | to_nice_json }}"
+        dest: "./test_all_applications_response.json"
+
+    - name: Summary
+      debug:
+        msg: |
+          Discovery Summary:
+          - Environments: {{ environments_response.json.environments | length }}
+          - Applications in first env: {{ applications_response.json.applications | default([]) | length }}
+          - Access points in first app: {{ access_points_response.json.access_points | default([]) | length if access_points_response is defined else 'N/A' }}
+          - Total applications: {{ all_applications_response.json.applications | default([]) | length }}
+
+# Made with Bob
