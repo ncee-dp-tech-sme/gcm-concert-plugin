@@ -10,7 +10,7 @@
         },
         "transform_declarations": {
           "FINAL_OUTPUT": {
-            "xpath": ".",
+            "xpath": ".[?(@.subject)]",
             "object": {
               "category": {
                 "const": "CRYPTO_OBJECT"
@@ -240,7 +240,7 @@
         },
         "transform_declarations": {
           "FINAL_OUTPUT": {
-            "xpath": ".",
+            "xpath": ".[?(@.host)]",
             "object": {
               "category": {
                 "const": "IT_ASSET"

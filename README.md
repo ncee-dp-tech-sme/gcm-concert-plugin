@@ -235,6 +235,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.2 (2026-04-24)
+- **Bug Fix**: Added conditional XPath filters to prevent cross-transformation errors
+  - Certificate transformation now uses `.[?(@.subject)]` to only process certificate files
+  - IT Asset transformation now uses `.[?(@.host)]` to only process IT asset files
+  - Prevents transformation failures when GCM applies all transformations to all files
+  - Resolves error: `'FINAL_OUTPUT.hostname.custom_func(javascript)' failed: result is null`
+
 ### 1.1.1 (2026-04-24)
 - **Bug Fix**: Corrected transformation file structure
   - Merged certificate and IT asset transformations into single `transform_discover.json` file
