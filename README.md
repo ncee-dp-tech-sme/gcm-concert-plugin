@@ -235,6 +235,14 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.1 (2026-04-24)
+- **Bug Fix**: Corrected transformation file structure
+  - Merged certificate and IT asset transformations into single `transform_discover.json` file
+  - Both transformations now in `transformation_list` array with different `yields` values
+  - Updated manifest to reference single transformation file
+  - Follows GCM best practices for multi-asset type discovery
+  - Resolves IT asset discovery issues where assets were not being processed
+
 ### 1.1.0 (2026-04-24)
 - **New Feature**: IT Asset Discovery
   - Added discovery of application access points (endpoints) from IBM Concert
