@@ -235,6 +235,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.4 (2026-04-24)
+- **Bug Fix**: Wrapped all IT asset JavaScript custom functions with skip_on_missing_field
+  - Added skip_on_missing_field wrapper to hostname, protocol, and port fields
+  - Prevents JavaScript execution errors when processing certificate files
+  - Resolves error: `'FINAL_OUTPUT.hostname.custom_func(javascript)' failed: result is null`
+  - All IT asset fields that depend on `host` now properly skip when host is missing
+
 ### 1.1.3 (2026-04-24)
 - **Bug Fix**: Reverted XPath predicate approach (not supported by GCM Omniparser)
   - Removed invalid XPath syntax `.[?(@.subject)]` and `.[?(@.host)]`
