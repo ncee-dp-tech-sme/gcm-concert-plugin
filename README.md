@@ -210,6 +210,18 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.2 (2026-04-24)
+- **Bug Fix**: Fixed transformation schema structure
+  - Added required `transformation_list` wrapper array
+  - Added `format` and `yields` fields for GCM compatibility
+  - Resolves "incorrect transformation schema" error in GCM UI and discovery
+
+### 1.0.1 (2026-04-24)
+- **Bug Fix**: Added `userId` field to transformation
+  - Maps to `last_updated_by` from IBM Concert certificate data
+  - Required by GCM for asset tracking and audit purposes
+  - Resolves "userId cannot be nil or empty" error during discovery
+
 ### 1.0.0 (Initial Release)
 - Multi-environment certificate discovery
 - Environment context enrichment
