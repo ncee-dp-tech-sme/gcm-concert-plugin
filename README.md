@@ -235,13 +235,17 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.6 (2026-04-24)
+- **Bug Fix**: Removed null checks from JavaScript functions - rely on skip_on_missing_field at uri level
+  - Reverted JavaScript null checks (they didn't prevent field evaluation)
+  - GCM evaluates all fields even when skip_on_missing_field triggers on uri
+  - Root cause: GCM processes all fields before checking skip conditions
+  - Solution: Simplified JavaScript functions, let skip_on_missing_field handle record skipping
+
 ### 1.1.5 (2026-04-24)
-- **Bug Fix**: Fixed JavaScript null reference errors in IT asset transformation
-  - Moved null checks INSIDE JavaScript functions instead of wrapping with skip_on_missing_field
-  - Added `if (!host) return ''` checks at start of hostname, protocol JavaScript functions
-  - Added `if (!host) return null` check at start of port JavaScript function
-  - Prevents JavaScript execution errors when certificate files (without host field) are processed
-  - Resolves error: `'FINAL_OUTPUT.hostname.custom_func(javascript)' failed: result is null`
+- **Bug Fix**: Attempted to add null checks inside JavaScript functions (did not work)
+  - Added `if (!host) return ''` checks but GCM still evaluated other fields
+  - Issue: GCM evaluates all fields regardless of skip_on_missing_field on uri
 
 ### 1.1.4 (2026-04-24)
 - **Bug Fix**: Attempted to wrap JavaScript functions with skip_on_missing_field (did not work)
