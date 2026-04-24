@@ -229,6 +229,125 @@
           }
         }
       }
+    },
+    {
+      "format": "json",
+      "yields": "it-asset",
+      "transformation": {
+        "parser_settings": {
+          "file_format_type": "json",
+          "version": "omni.2.1"
+        },
+        "transform_declarations": {
+          "FINAL_OUTPUT": {
+            "xpath": ".",
+            "object": {
+              "category": {
+                "const": "IT_ASSET"
+              },
+              "asset_type": {
+                "const": "IT_ASSET"
+              },
+              "uri": {
+                "xpath": "host"
+              },
+              "hostname": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { try { const url = new URL(host); return url.hostname; } catch(e) { return host; } })()"
+                    },
+                    {
+                      "const": "host"
+                    },
+                    {
+                      "xpath": "host"
+                    }
+                  ]
+                }
+              },
+              "protocol": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { try { const url = new URL(host); return url.protocol.replace(':', '').toUpperCase(); } catch(e) { return 'HTTPS'; } })()"
+                    },
+                    {
+                      "const": "host"
+                    },
+                    {
+                      "xpath": "host"
+                    }
+                  ]
+                }
+              },
+              "port": {
+                "custom_func": {
+                  "name": "javascript",
+                  "args": [
+                    {
+                      "const": "(function() { try { const url = new URL(host); if (url.port) return parseInt(url.port); return url.protocol === 'https:' ? 443 : 80; } catch(e) { return 443; } })()"
+                    },
+                    {
+                      "const": "host"
+                    },
+                    {
+                      "xpath": "host"
+                    }
+                  ]
+                },
+                "type": "int"
+              },
+              "asset_name": {
+                "xpath": "name"
+              },
+              "discovery_sources": {
+                "array": [
+                  {
+                    "external": "profile_id"
+                  }
+                ]
+              },
+              "metadata": {
+                "object": {
+                  "concert_id": {
+                    "xpath": "id"
+                  },
+                  "concert_application_id": {
+                    "xpath": "application_id"
+                  },
+                  "concert_application_name": {
+                    "xpath": "application_name"
+                  },
+                  "concert_environment_id": {
+                    "xpath": "environment_id"
+                  },
+                  "concert_environment_name": {
+                    "xpath": "environment_name"
+                  },
+                  "concert_environment_type": {
+                    "xpath": "environment_type"
+                  },
+                  "is_public": {
+                    "xpath": "is_public"
+                  },
+                  "bomref": {
+                    "xpath": "bomref"
+                  },
+                  "impacted_application_count": {
+                    "xpath": "impacted_application_count"
+                  },
+                  "endpoints": {
+                    "xpath": "endpoints.endpoints"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

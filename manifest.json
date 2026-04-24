@@ -2,7 +2,7 @@
   "code": "ibm-concert-discovery",
   "title": "IBM Concert Discovery",
   "description": "Discovery plugin for IBM Concert. Discovers certificates and IT assets (access points) across multiple Concert environments with environment context enrichment.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "external",
   "category": [
     "DISCOVERY"
@@ -31,16 +31,10 @@
       ]
     }
   ],
-  "transformation": [
-    {
-      "type": "gcm",
-      "reference": "transformation/discovery/transform_discover.json"
-    },
-    {
-      "type": "gcm",
-      "reference": "transformation/discovery/transform_it_assets.json"
-    }
-  ],
+  "transformation": {
+    "type": "gcm",
+    "reference": "transformation/discovery/transform_discover.json"
+  },
   "config": {
     "type": "inline"
   }
