@@ -43,6 +43,9 @@
           "xpath": "serial_number",
           "type": "int"
         },
+        "userId": {
+          "xpath": "last_updated_by"
+        },
         "not_before": {
           "custom_func": {
             "name": "javascript",
