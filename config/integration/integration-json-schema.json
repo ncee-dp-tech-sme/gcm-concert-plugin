@@ -17,6 +17,7 @@
     "api_key": {
       "type": "string",
       "description": "IBM Concert API key for authentication",
+       "x-sensitive": true,
       "minLength": 1
     },
     "instance_id": {

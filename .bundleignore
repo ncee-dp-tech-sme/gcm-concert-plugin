@@ -65,6 +65,6 @@ ansible-lint.yml
 
 # Bob configuration
 .bob/
-
+supporting_files/
 package.ps1
 package.sh
