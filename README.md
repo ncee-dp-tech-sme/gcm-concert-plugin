@@ -235,13 +235,18 @@ For issues or questions:
 
 ## Version History
 
+### 1.2.2 (2026-04-25)
+- **Critical Fix**: Wrapped all IT asset JavaScript functions with skip_on_missing_field
+  - Fixed: `'FINAL_OUTPUT.port.custom_func(javascript)' failed: result is null` error
+  - Root cause: JavaScript functions (hostname, protocol, port) were executing on certificate files
+  - Solution: Wrapped each JavaScript function with skip_on_missing_field checking for host field
+  - Added null checks inside JavaScript functions as additional safety
+  - Now properly skips IT asset transformation when processing certificate files
+
 ### 1.2.1 (2026-04-24)
 - **Fix**: Reverted to single transformation file with transformation_list array
   - GCM manifest schema does not support array for transformation field
   - Combined both transformations in `transform_discover.json` with transformation_list array
-  - Each transformation has its own `yields` field (certificate/it-asset)
-  - Separate transformation files kept for reference but not packaged
-  - This maintains the separation of concerns while conforming to GCM schema
 
 ### 1.2.0 (2026-04-24)
 - **Attempted Fix**: Tried separate transformation files (reverted in 1.2.1)

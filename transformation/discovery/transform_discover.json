@@ -263,48 +263,78 @@
               },
               "hostname": {
                 "custom_func": {
-                  "name": "javascript",
+                  "name": "skip_on_missing_field",
                   "args": [
                     {
-                      "const": "(function() { try { const url = new URL(host); return url.hostname; } catch(e) { return host; } })()"
+                      "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                          {
+                            "const": "(function() { if (!host) return ''; try { const url = new URL(host); return url.hostname; } catch(e) { return host; } })()"
+                          },
+                          {
+                            "const": "host"
+                          },
+                          {
+                            "xpath": "host"
+                          }
+                        ]
+                      }
                     },
                     {
-                      "const": "host"
-                    },
-                    {
-                      "xpath": "host"
+                      "const": "message:Skipped - host field missing"
                     }
                   ]
                 }
               },
               "protocol": {
                 "custom_func": {
-                  "name": "javascript",
+                  "name": "skip_on_missing_field",
                   "args": [
                     {
-                      "const": "(function() { try { const url = new URL(host); return url.protocol.replace(':', '').toUpperCase(); } catch(e) { return 'HTTPS'; } })()"
+                      "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                          {
+                            "const": "(function() { if (!host) return ''; try { const url = new URL(host); return url.protocol.replace(':', '').toUpperCase(); } catch(e) { return 'HTTPS'; } })()"
+                          },
+                          {
+                            "const": "host"
+                          },
+                          {
+                            "xpath": "host"
+                          }
+                        ]
+                      }
                     },
                     {
-                      "const": "host"
-                    },
-                    {
-                      "xpath": "host"
+                      "const": "message:Skipped - host field missing"
                     }
                   ]
                 }
               },
               "port": {
                 "custom_func": {
-                  "name": "javascript",
+                  "name": "skip_on_missing_field",
                   "args": [
                     {
-                      "const": "(function() { try { const url = new URL(host); if (url.port) return parseInt(url.port); return url.protocol === 'https:' ? 443 : 80; } catch(e) { return 443; } })()"
+                      "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                          {
+                            "const": "(function() { if (!host) return null; try { const url = new URL(host); if (url.port) return parseInt(url.port); return url.protocol === 'https:' ? 443 : 80; } catch(e) { return 443; } })()"
+                          },
+                          {
+                            "const": "host"
+                          },
+                          {
+                            "xpath": "host"
+                          }
+                        ]
+                      }
                     },
                     {
-                      "const": "host"
-                    },
-                    {
-                      "xpath": "host"
+                      "const": "message:Skipped - host field missing"
                     }
                   ]
                 },
