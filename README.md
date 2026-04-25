@@ -235,6 +235,14 @@ For issues or questions:
 
 ## Version History
 
+### 1.2.3 (2026-04-25)
+- **Critical Fix**: IT asset files now properly included in GCM processing
+  - Fixed: IT asset discovery was creating files but GCM wasn't processing them
+  - Root cause: discover.yaml only looked for `crypto_asset_details_*.json` files
+  - Solution: Updated discover.yaml to find both certificate and IT asset output files
+  - Now properly discovers and transforms both certificates AND IT assets (access points)
+  - IT assets include hostname, protocol, port, and application context from Concert
+
 ### 1.2.2 (2026-04-25)
 - **Critical Fix**: Wrapped all IT asset JavaScript functions with skip_on_missing_field
   - Fixed: `'FINAL_OUTPUT.port.custom_func(javascript)' failed: result is null` error

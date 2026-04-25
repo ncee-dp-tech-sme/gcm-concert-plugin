@@ -38,11 +38,22 @@
 
     - name: Generate final summary
       block:
-        - name: Find all output files
+        - name: Find all crypto asset output files
           find:
             paths: "{{ out_dir }}"
             patterns: "crypto_asset_details_*.json"
-          register: output_files
+          register: crypto_output_files
+
+        - name: Find all IT asset output files
+          find:
+            paths: "{{ out_dir }}"
+            patterns: "it_asset_details_*.json"
+          register: it_asset_output_files
+
+        - name: Combine all output files
+          set_fact:
+            output_files:
+              files: "{{ crypto_output_files.files + it_asset_output_files.files }}"
 
         - name: Update final status
           copy:
