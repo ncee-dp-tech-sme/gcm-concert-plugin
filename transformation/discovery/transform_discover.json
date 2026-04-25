@@ -242,12 +242,6 @@
           "FINAL_OUTPUT": {
             "xpath": ".",
             "object": {
-              "category": {
-                "const": "IT_ASSET"
-              },
-              "asset_type": {
-                "const": "IT_ASSET"
-              },
               "uri": {
                 "custom_func": {
                   "name": "skip_on_missing_field",
@@ -340,8 +334,30 @@
                 },
                 "type": "int"
               },
-              "asset_name": {
-                "xpath": "name"
+              "asset_type": {
+                "const": "APPLICATION"
+              },
+              "description": {
+                "custom_func": {
+                  "name": "concat",
+                  "args": [
+                    {
+                      "const": "IBM Concert Access Point - "
+                    },
+                    {
+                      "xpath": "name"
+                    },
+                    {
+                      "const": " (Environment: "
+                    },
+                    {
+                      "xpath": "environment_name"
+                    },
+                    {
+                      "const": ")"
+                    }
+                  ]
+                }
               },
               "discovery_sources": {
                 "array": [
@@ -352,8 +368,11 @@
               },
               "metadata": {
                 "object": {
-                  "concert_id": {
+                  "concert_access_point_id": {
                     "xpath": "id"
+                  },
+                  "concert_access_point_name": {
+                    "xpath": "name"
                   },
                   "concert_application_id": {
                     "xpath": "application_id"
@@ -370,16 +389,16 @@
                   "concert_environment_type": {
                     "xpath": "environment_type"
                   },
-                  "is_public": {
+                  "concert_is_public": {
                     "xpath": "is_public"
                   },
-                  "bomref": {
+                  "concert_bomref": {
                     "xpath": "bomref"
                   },
-                  "impacted_application_count": {
+                  "concert_impacted_application_count": {
                     "xpath": "impacted_application_count"
                   },
-                  "endpoints": {
+                  "concert_endpoints": {
                     "xpath": "endpoints.endpoints"
                   }
                 }

@@ -1,0 +1,17 @@
+{
+  "application_id": "e03dc1c6-8941-4301-a56c-33907dfb2d3d",
+  "application_name": "allegroapp",
+  "bomref": "appapi:allegroapp-data-store",
+  "endpoints": {
+    "endpoints": ["/data_store"]
+  },
+  "environment_id": "d8b068f3-336f-4408-9d49-3033672448be",
+  "environment_name": "prod",
+  "environment_type": "GKE",
+  "host": "http://aci-allegroapp-data-store.prod-d1267efc7babedf0e30addbf16d8f985-0000.us-east.containers.appdomain.cloud",
+  "id": "0ae9d7c2-c059-45ae-96f0-9fe4842809ea",
+  "impacted_application_count": 0,
+  "is_public": false,
+  "name": "appapi:allegroapp-data-store",
+  "tags": null
+}
