@@ -1,0 +1,31 @@
+---
+# Changelog:
+# Fri Sep 11 21:39:05 CEST 2026 - v2.0.1: Created as pagination page helper.
+# Sat Sep 12 00:15:23 CEST 2026 - v2.0.2: Added when: has_more_pages | bool to every
+#   task so the guard is re-evaluated per iteration.
+# (fix/timeout-pagination) - v2.1.0: Simplified. This file is now only called for pages 2+
+#   (page 1 is fetched inline by fetch_application_access_points.yaml). Removed has_more_pages
+#   guard — the caller loop range(2, ap_total_pages+1) already ensures correct iteration
+#   count. Renamed register variable to avoid collisions with the certificates helper.
+
+# Helper file to fetch a single additional page (page 2+) of access points for an environment.
+# Included by fetch_application_access_points.yaml with loop_var: ap_page_num.
+# Only called when ap_total_pages > 1 (already determined from page 1 response).
+
+- name: Fetch access point page {{ ap_page_num }}
+  uri:
+    url: "{{ instance.server_url }}/core/api/v1/environments/{{ concert_environment.id }}/access_points?page_number={{ ap_page_num }}&page_size=100&sort_by=name&sort_direction=ASC"
+    method: GET
+    headers:
+      Authorization: "C_API_KEY {{ instance.api_key }}"
+      InstanceId: "{{ instance.instance_id }}"
+      Accept: "application/json"
+    validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+    status_code: [200]
+    timeout: 60
+  register: ap_page_response
+  no_log: true
+
+- name: Append access points from page {{ ap_page_num }}
+  set_fact:
+    environment_access_points: "{{ environment_access_points + (ap_page_response.json.access_points | default([])) }}"

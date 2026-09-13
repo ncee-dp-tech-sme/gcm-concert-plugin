@@ -1,50 +1,56 @@
 ---
-# Helper file to fetch certificates for a single environment
-# This file is included by process_instance.yaml with loop_var: concert_environment
-# Access environment data via {{ concert_environment.id }}, {{ concert_environment.name }}, etc.
+# Changelog:
+# Fri Sep 11 20:25:19 CEST 2026 - Initial version with recursive include_tasks pagination.
+# Fri Sep 11 21:39:05 CEST 2026 - v2.0.1: Fixed infinite-loop bug, switched to range(1,1001)
+#   with page helper file.
+# Sat Sep 12 00:15:23 CEST 2026 - v2.0.2: Added per-task when: guard in page helper to avoid
+#   evaluating skipped tasks.
+# (fix/timeout-pagination) - v2.1.0: Rewrote pagination to eliminate range(1,1001) 1000-
+#   iteration loop that caused GCM discovery timeouts. New approach: fetch page 1 first to
+#   learn total_pages, then loop only over remaining pages (range(2, total_pages+1)), which
+#   may be 0 iterations for single-page environments. Also added uri timeout: 60 to prevent
+#   hung HTTP calls. Removed dependency on fetch_environment_certificates_page.yaml.
+
+# Helper file to fetch ALL certificates for a single environment.
+# Included by process_instance.yaml with loop_var: concert_environment.
+# Access environment data via {{ concert_environment.id }}, {{ concert_environment.name }}.
 
 - name: Fetch certificates for environment {{ concert_environment.name | default(concert_environment.id) }}
   block:
-    - name: Initialize pagination variables
+    - name: Initialize certificate accumulator
       set_fact:
-        current_page: 1
-        has_more_pages: true
         environment_certificates: []
 
-    - name: Fetch certificates with pagination
-      block:
-        - name: Fetch certificate page
-          uri:
-            url: "{{ instance.server_url }}/core/api/v1/certificates?environment_id={{ concert_environment.id }}&page_size=2000&page_number={{ current_page }}"
-            method: GET
-            headers:
-              Authorization: "C_API_KEY {{ instance.api_key }}"
-              InstanceId: "{{ instance.instance_id }}"
-              Accept: "application/json"
-            validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
-            status_code: [200]
-          register: certificates_response
-          no_log: true
+    # Fetch page 1 first so we know the total number of pages before looping.
+    # page_size=2000 keeps the number of pages low (most environments fit in 1 page).
+    - name: Fetch certificate page 1
+      uri:
+        url: "{{ instance.server_url }}/core/api/v1/certificates?environment_id={{ concert_environment.id }}&page_size=2000&page_number=1"
+        method: GET
+        headers:
+          Authorization: "C_API_KEY {{ instance.api_key }}"
+          InstanceId: "{{ instance.instance_id }}"
+          Accept: "application/json"
+        validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
+        status_code: [200]
+        timeout: 60
+      register: cert_page1_response
+      no_log: true
 
-        - name: Extract certificates from response
-          set_fact:
-            page_certificates: "{{ certificates_response.json.certificates | default([]) }}"
-            total_pages: "{{ certificates_response.json.pagination.total_pages | default(1) }}"
+    - name: Extract page 1 certificates and total page count
+      set_fact:
+        environment_certificates: "{{ cert_page1_response.json.certificates | default([]) }}"
+        cert_total_pages: "{{ cert_page1_response.json.pagination.total_pages | default(1) | int }}"
 
-        - name: Append certificates to environment list
-          set_fact:
-            environment_certificates: "{{ environment_certificates + page_certificates }}"
-
-        - name: Check if more pages exist
-          set_fact:
-            has_more_pages: "{{ (current_page | int) < (total_pages | int) }}"
-            current_page: "{{ (current_page | int) + 1 }}"
-
-        - name: Continue pagination if needed
-          include_tasks: fetch_environment_certificates.yaml
-          when: has_more_pages | bool
-
-      when: has_more_pages | bool
+    # Only loop if there are additional pages beyond page 1.
+    # range(2, cert_total_pages+1) produces an empty list when cert_total_pages == 1,
+    # so this block executes 0 times for single-page environments.
+    - name: Fetch remaining certificate pages (pages 2..{{ cert_total_pages }})
+      include_tasks: fetch_environment_certificates_page.yaml
+      loop: "{{ range(2, cert_total_pages | int + 1) | list }}"
+      loop_control:
+        loop_var: cert_page_num
+      when: cert_total_pages | int > 1
 
     - name: Enrich certificates with environment context
       set_fact:
