@@ -1,5 +1,18 @@
 {
   
   "bob-code.useAgentRules": true,
-  "bob-code.autoImportSettingsPath": ".bob/bob-config.json"
+  "bob-code.autoImportSettingsPath": ".bob/bob-config.json",
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 50000,
+      "askForPassword": true,
+      "driver": "PostgreSQL",
+      "name": "gem_postgres",
+      "database": "gem_postgres",
+      "username": "postgres"
+    }
+  ]
 }

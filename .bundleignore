@@ -51,6 +51,15 @@ ansible_collections/
 transformation/discovery/transform_certificates.json
 transformation/discovery/transform_it_assets.json
 
+# Development/reference files (not needed in plugin package)
+old_support_files/
+task-outcomes/
+supporting_files/
+test_it_asset_transformation.json
+v1.2.4_IT_ASSET_FIX.md
+config/test_connection_config.json
+config/test_config.json
+
 # CI/CD
 .github/
 .gitlab-ci.yml
@@ -65,6 +74,5 @@ ansible-lint.yml
 
 # Bob configuration
 .bob/
-supporting_files/
 package.ps1
 package.sh

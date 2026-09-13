@@ -95,12 +95,6 @@
                   "concert_id": {
                     "xpath": "id"
                   },
-                  "concert_application_id": {
-                    "xpath": "application_id"
-                  },
-                  "concert_application_name": {
-                    "xpath": "application_name"
-                  },
                   "concert_environment_id": {
                     "xpath": "environment_id"
                   },

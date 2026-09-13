@@ -144,3 +144,5 @@ config/test_connection_config.json
 *.zip
 .bob/mcp.json
 supporting_files/*
+old_support_files/*
+

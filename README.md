@@ -17,7 +17,8 @@ This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inve
 ## Prerequisites
 
 - IBM Guardium Cryptography Manager (GCM) instance
-- IBM Concert Hybrid v2.3.0 or later
+- IBM Concert 3.0.0 or later (for v2.x of this plugin)
+- IBM Concert Hybrid v2.3.0+ supported by plugin v1.x
 - IBM Concert API credentials:
   - Server URL (HTTPS)
   - API Key
@@ -49,15 +50,13 @@ This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inve
 
 ### Discovery Process
 
-1. **Environment Discovery**: The plugin first fetches all environments from IBM Concert using the `/concert/core/api/v1/environments` API endpoint
+1. **Environment Discovery**: The plugin fetches all environments from IBM Concert using the `/core/api/v1/environments` endpoint
 
-2. **Application Discovery**: Fetches all applications from IBM Concert using the `/concert/core/api/v1/applications` endpoint
+2. **Certificate Discovery**: For each environment, fetches all certificates using `/core/api/v1/certificates?environment_id={id}`
 
-3. **Certificate Discovery**: For each environment, the plugin fetches all certificates using the `/concert/core/api/v1/certificates?environment_id={id}` endpoint
+3. **IT Asset Discovery**: For each environment, fetches access points using `/core/api/v1/environments/{env_id}/access_points` — one call per environment, no application loop required
 
-4. **IT Asset Discovery**: For each application-environment combination, fetches access points using the `/concert/core/api/v1/applications/{app_id}/environments/{env_id}/access_points` endpoint
-
-5. **Data Enrichment**:
+4. **Data Enrichment**:
    - **Certificates** are enriched with:
      - Environment context (ID, name, type)
      - Cluster information
@@ -65,8 +64,8 @@ This plugin enables IBM Guardium Cryptography Manager (GCM) to discover and inve
      - Issue tracking information
    
    - **IT Assets** are enriched with:
-     - Application context (ID, name)
-     - Environment context (ID, name, type)
+     - Environment context (ID, name) — provided directly in the API response
+     - Environment type — added from the environment loop variable
      - Endpoint details (protocol, hostname, port)
      - Public/private access indicators
 
@@ -132,7 +131,6 @@ The plugin discovers:
   - Hostname/URL
   - Protocol (HTTP/HTTPS)
   - Port number
-  - Application name and ID
   - Environment name and type
   - Public/private access indicator
   - Endpoint paths
@@ -211,14 +209,15 @@ Each discovered certificate includes:
 ## API Endpoints Used
 
 ### Certificate Discovery
-- `GET /concert/core/api/v1/environments` - List all environments
-- `GET /concert/core/api/v1/certificates?environment_id={id}` - List certificates per environment
+- `GET /core/api/v1/environments` — List all environments
+- `GET /core/api/v1/certificates?environment_id={id}` — List certificates per environment (paginated)
 
 ### IT Asset Discovery
-- `GET /concert/core/api/v1/applications` - List all applications
-- `GET /concert/core/api/v1/applications/{app_id}/environments/{env_id}/access_points` - List access points per application-environment
+- `GET /core/api/v1/environments/{env_id}/access_points` — List access points per environment (paginated)
 
 All endpoints support pagination with `page_size` and `page_number` parameters (up to 2000 items per page).
+
+> **Note**: Plugin v1.x used the incorrect `/concert/core/api/v1/` URL prefix and a more complex app×environment loop. Both issues are resolved in v2.0.0.
 
 ## Limitations
 
@@ -234,6 +233,25 @@ For issues or questions:
 3. Contact IBM Support with plugin version and error details
 
 ## Version History
+
+### 2.0.2 (2026-09-12) — Pagination Timeout Fix
+- **Critical Fix**: Resolved discovery timeouts caused by all 1000 loop iterations firing regardless of actual page count
+  - Root cause: Ansible evaluates `when:` on `include_tasks` **once before the loop starts**, not before each iteration. So setting `has_more_pages: false` inside the page helper had no effect on the already-committed loop — every environment triggered 1000 API calls
+  - Fix: Removed `when: has_more_pages | bool` from the `include_tasks` call in both `fetch_environment_certificates.yaml` and `fetch_application_access_points.yaml`; added `when: has_more_pages | bool` to **every individual task** inside `fetch_environment_certificates_page.yaml` and `fetch_application_access_points_page.yaml` so the guard is re-evaluated on each iteration
+
+### 2.0.1 (2026-09-11) — Pagination Bug Fix
+- **Critical Fix**: Resolved infinite loop / `exit status 1` crash in discovery
+  - Root cause: `fetch_environment_certificates.yaml` and `fetch_application_access_points.yaml` implemented pagination by calling `include_tasks: <themselves>`, which re-ran the file from the top on every page, resetting `current_page` to `1` and the accumulator lists to `[]` — creating an infinite loop
+  - Fix: Replaced recursive self-calls with a bounded `loop: range(1, 1001)` that delegates each page fetch to new dedicated page-helper files
+  - New helpers: `fetch_environment_certificates_page.yaml` and `fetch_application_access_points_page.yaml`
+  - The loop exits early via `when: has_more_pages | bool` once the final page is reached
+
+### 2.0.0 (2026-09-11) — Concert 3.0+ Migration
+- **Breaking Change**: Minimum supported Concert version is now 3.0.0
+- **Critical Fix**: Corrected access point API URL — the previous `/concert/core/api/v1/` prefix was invalid and caused all IT asset discovery to silently fail via the rescue block
+- **Simplified IT Asset Discovery**: Replaced the application × environment Cartesian product loop with a single environment-scoped endpoint `/core/api/v1/environments/{id}/access_points`, reducing API calls from O(apps×envs) to O(envs)
+- **Removed `application_id`/`application_name`**: These fields are no longer provided by the environment-scoped access point endpoint and have been removed from IT asset metadata
+- **Environment context now native**: `environment_id` and `environment_name` are returned directly on each access point in the Concert 3.0 API; client-side enrichment for these fields removed
 
 ### 1.2.3 (2026-04-25)
 - **Critical Fix**: IT asset files now properly included in GCM processing

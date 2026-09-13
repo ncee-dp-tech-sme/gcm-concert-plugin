@@ -9,30 +9,32 @@
   "properties": {
     "server_url": {
       "type": "string",
-      "format": "uri",
-      "pattern": "^https://",
-      "description": "IBM Concert server URL (must use HTTPS)",
+      "title": "Server URL",
+      "description": "Base URL for the IBM Concert instance",
       "minLength": 1
     },
     "api_key": {
       "type": "string",
-      "description": "IBM Concert API key for authentication",
-       "x-sensitive": true,
+      "title": "API Key",
+      "description": "API key used to authenticate to IBM Concert",
+      "x-sensitive": true,
       "minLength": 1
     },
     "instance_id": {
       "type": "string",
-      "description": "IBM Concert instance ID",
+      "title": "Instance ID",
+      "description": "IBM Concert instance identifier sent with API requests",
       "minLength": 1
     },
     "verify_ssl": {
       "type": "string",
+      "title": "Verify SSL",
+      "description": "Verify SSL certificates when connecting to IBM Concert",
       "enum": [
         "true",
         "false"
       ],
-      "default": "true",
-      "description": "Verify SSL certificates (recommended: true)"
+      "default": "true"
     }
   }
 }
