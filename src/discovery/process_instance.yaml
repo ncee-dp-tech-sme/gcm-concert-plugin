@@ -1,4 +1,11 @@
 ---
+# Changelog:
+# Fri Sep 11 20:25:19 CEST 2026 - v2.0.0: Removed applications API fetch and app×env
+#   Cartesian product loop. Access points now fetched per environment only (same loop as
+#   certificates), reducing API calls from O(apps×envs) to O(envs).
+# (fix/timeout-pagination) - v2.1.0: Added timeout: 60 to the environments API call to
+#   prevent hung HTTP connections from blocking discovery indefinitely.
+
 # Helper file to process discovery for a single integration instance
 # This file is included by discover.yaml with loop_var: instance
 # Access instance configuration fields via {{ instance.field_name }}
@@ -27,6 +34,7 @@
           Accept: "application/json"
         validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
         status_code: [200]
+        timeout: 60
       register: environments_response
       no_log: true
 
@@ -46,43 +54,13 @@
           }
         dest: "{{ out_dir }}/{{ status_file_name }}"
 
-    # Step 2: Fetch all applications from IBM Concert
-    - name: Fetch applications from IBM Concert
-      uri:
-        url: "{{ instance.server_url }}/core/api/v1/applications?page_size=2000"
-        method: GET
-        headers:
-          Authorization: "C_API_KEY {{ instance.api_key }}"
-          InstanceId: "{{ instance.instance_id }}"
-          Accept: "application/json"
-        validate_certs: "{{ (instance.verify_ssl | default('true')) == 'true' }}"
-        status_code: [200]
-      register: applications_response
-      no_log: true
-
-    - name: Initialize application list
-      set_fact:
-        all_applications: "{{ applications_response.json.applications | default([]) }}"
-        total_applications: "{{ (applications_response.json.applications | default([]) | length) }}"
-
-    - name: Update status - fetched applications
-      copy:
-        content: |
-          {
-            "runId": "{{ run_id }}",
-            "action": "{{ action }}",
-            "status": "InProgress",
-            "message": "Found {{ total_applications }} applications and {{ total_environments }} environments in instance {{ instance_index + 1 }}"
-          }
-        dest: "{{ out_dir }}/{{ status_file_name }}"
-
-    # Step 3: Initialize asset counters for this instance
+    # Step 2: Initialize asset counters for this instance
     - name: Initialize instance asset counters
       set_fact:
         instance_asset_count: 0
         instance_it_asset_count: 0
 
-    # Step 4: Process each environment to fetch certificates
+    # Step 3: Process each environment to fetch certificates
     - name: Fetch certificates for each environment
       include_tasks: fetch_environment_certificates.yaml
       loop: "{{ all_environments }}"
@@ -90,20 +68,16 @@
         loop_var: concert_environment
         index_var: env_index
 
-    # Step 5: Process each application-environment combination to fetch access points (IT Assets)
-    - name: Fetch access points for each application in each environment
+    # Step 4: Fetch access points per environment (Concert 3.0+ simplified endpoint)
+    # The old approach looped over app×env pairs using /concert/core/api/v1/applications/{id}/environments/{id}/access_points
+    # In Concert 3.0+: use /core/api/v1/environments/{id}/access_points which returns
+    # environment_id and environment_name directly on each access point object.
+    - name: Fetch access points for each environment
       include_tasks: fetch_application_access_points.yaml
-      loop: "{{ all_applications | product(all_environments) | list }}"
+      loop: "{{ all_environments }}"
       loop_control:
-        loop_var: app_env_pair
-        index_var: app_env_index
-      vars:
-        app_env_combo:
-          application_id: "{{ app_env_pair[0].id }}"
-          application_name: "{{ app_env_pair[0].name }}"
-          environment_id: "{{ app_env_pair[1].id }}"
-          environment_name: "{{ app_env_pair[1].name }}"
-          environment_type: "{{ app_env_pair[1].type | default('') }}"
+        loop_var: concert_environment
+        index_var: env_index
 
     - name: Update counters
       set_fact:
@@ -118,5 +92,3 @@
     - name: Log error
       debug:
         msg: "Discovery failed for instance {{ instance_index }}: {{ ansible_failed_result.msg | default(ansible_failed_result | string) }}"
-
-

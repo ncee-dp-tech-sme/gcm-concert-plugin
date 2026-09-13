@@ -1,0 +1,58 @@
+PROMPT: I get this error when using the 2.0.0 plugin. Any suggestions on how to fix?
+time=09/11/2026T19:15:51.475Z level=ERROR msg="Plugin action failed" ... ansible-playbook error: general error: exit status 1
+
+Timestamp: Fri Sep 11 21:39:05 CEST 2026
+
+== ROOT CAUSE ==
+
+Both fetch_environment_certificates.yaml and fetch_application_access_points.yaml
+implemented multi-page pagination by calling `include_tasks: <themselves>` recursively.
+
+When Ansible re-includes a file it runs from the TOP of the file, which immediately
+hits the `set_fact` block that resets:
+  - current_page: 1
+  - environment_certificates: [] (or environment_access_points: [])
+
+This created an infinite loop that exhausted the Ansible task stack and caused the
+playbook to exit with: "ansible-playbook error: general error: exit status 1"
+
+== FILES CHANGED ==
+
+src/discovery/fetch_environment_certificates.yaml
+  - Removed recursive self-call pagination block
+  - Added changelog entry (Phase 3)
+  - Now delegates to fetch_environment_certificates_page.yaml via bounded loop
+
+src/discovery/fetch_application_access_points.yaml
+  - Removed recursive self-call pagination block
+  - Added changelog entry (Phase 3)
+  - Now delegates to fetch_application_access_points_page.yaml via bounded loop
+
+== FILES CREATED ==
+
+src/discovery/fetch_environment_certificates_page.yaml
+  - New: fetches a single page of certificates (loop_var: cert_page_num)
+  - Sets has_more_pages: false to break the loop in the parent file
+
+src/discovery/fetch_application_access_points_page.yaml
+  - New: fetches a single page of access points (loop_var: ap_page_num)
+  - Sets has_more_pages: false to break the loop in the parent file
+
+README.md
+  - Added version 2.0.1 entry documenting the pagination fix
+
+== FIX PATTERN ==
+
+Before (broken - recursive):
+  include_tasks: fetch_environment_certificates.yaml   # ← calls itself from top
+  when: has_more_pages | bool
+
+After (correct - bounded loop):
+  include_tasks: fetch_environment_certificates_page.yaml
+  loop: "{{ range(1, 1001) | list }}"
+  loop_control:
+    loop_var: cert_page_num
+  when: has_more_pages | bool
+
+The page helper sets has_more_pages: false on the last page, causing Ansible to
+skip all remaining loop iterations — no wasted API calls, no infinite loop.
