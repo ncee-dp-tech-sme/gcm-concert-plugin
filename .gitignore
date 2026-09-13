@@ -142,6 +142,7 @@ config/test_config.json
 config/test_connection_config.json
 .bob/mcp.json
 *.zip
+!ibm-concert-discovery-2.1.0.zip
 .bob/mcp.json
 supporting_files/*
 old_support_files/*
