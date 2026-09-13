@@ -1,0 +1,28 @@
+PROMPT: update the manifest to the correct version and create a new package
+Timestamp: Fri Sep 11 21:41:43 CEST 2026
+
+== ACTIONS TAKEN ==
+
+manifest.json
+  - Updated version from "2.0.0" to "2.0.1"
+
+Package created: ibm-concert-discovery-2.0.1.zip (19K)
+
+== PACKAGE CONTENTS VERIFIED ==
+
+Files at root level (no nested folder):
+  manifest.json
+  README.md
+  requirements.yaml
+  .bundleignore
+  config/integration/integration-json-schema.json
+  config/integration/integration-ui-schema.json
+  src/integration/test_connection.yaml
+  src/discovery/discover.yaml
+  src/discovery/process_instance.yaml
+  src/discovery/fetch_environment_certificates.yaml
+  src/discovery/fetch_environment_certificates_page.yaml   (new in 2.0.1)
+  src/discovery/fetch_application_access_points.yaml
+  src/discovery/fetch_application_access_points_page.yaml  (new in 2.0.1)
+  transformation/discovery/transform_discover.json
+  translation/en/messages.json

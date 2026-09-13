@@ -1,0 +1,52 @@
+PROMPT: I get timeouts when doing a discovery, check everything to see if there are no loops or any other bugs in the code
+Timestamp: Sat Sep 12 00:15:23 CEST 2026
+
+== ROOT CAUSE ==
+
+Ansible evaluates `when:` on `include_tasks` ONCE before the loop starts, not before
+each iteration. The 2.0.1 fix placed `when: has_more_pages | bool` on the include_tasks
+call itself:
+
+  include_tasks: fetch_environment_certificates_page.yaml
+  loop: "{{ range(1, 1001) | list }}"
+  loop_control:
+    loop_var: cert_page_num
+  when: has_more_pages | bool   <-- evaluated once, always true at loop start
+
+Since has_more_pages is true when the loop begins, Ansible commits to running all 1000
+iterations. Setting has_more_pages: false inside the page helper file had no effect on
+the already-running loop. Result: every environment triggered up to 1000 API calls,
+causing discovery timeouts.
+
+== FIX ==
+
+Removed `when: has_more_pages | bool` from the include_tasks loop in both parent files.
+Added `when: has_more_pages | bool` to EVERY individual task inside the page helper files.
+Because task-level `when:` is re-evaluated before each task, the guard now works correctly
+and stops all remaining iterations as soon as the last page is fetched.
+
+== FILES CHANGED ==
+
+src/discovery/fetch_environment_certificates.yaml
+  - Removed `when: has_more_pages | bool` from include_tasks loop
+  - Added changelog entry
+
+src/discovery/fetch_application_access_points.yaml
+  - Removed `when: has_more_pages | bool` from include_tasks loop
+  - Added changelog entry
+
+src/discovery/fetch_environment_certificates_page.yaml
+  - Added `when: has_more_pages | bool` to all 4 tasks
+  - Added changelog entry
+
+src/discovery/fetch_application_access_points_page.yaml
+  - Added `when: has_more_pages | bool` to all 4 tasks
+  - Added changelog entry
+
+manifest.json
+  - Version bumped from 2.0.1 to 2.0.2
+
+README.md
+  - Added version 2.0.2 entry
+
+Package created: ibm-concert-discovery-2.0.2.zip (20K)

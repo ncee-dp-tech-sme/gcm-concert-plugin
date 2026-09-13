@@ -146,3 +146,4 @@ config/test_connection_config.json
 supporting_files/*
 old_support_files/*
 
+.bob/.devsecignore.findings
