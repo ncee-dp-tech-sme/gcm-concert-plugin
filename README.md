@@ -234,10 +234,19 @@ For issues or questions:
 
 ## Version History
 
-### 2.0.2 (2026-09-12) — Pagination Timeout Fix
-- **Critical Fix**: Resolved discovery timeouts caused by all 1000 loop iterations firing regardless of actual page count
-  - Root cause: Ansible evaluates `when:` on `include_tasks` **once before the loop starts**, not before each iteration. So setting `has_more_pages: false` inside the page helper had no effect on the already-committed loop — every environment triggered 1000 API calls
-  - Fix: Removed `when: has_more_pages | bool` from the `include_tasks` call in both `fetch_environment_certificates.yaml` and `fetch_application_access_points.yaml`; added `when: has_more_pages | bool` to **every individual task** inside `fetch_environment_certificates_page.yaml` and `fetch_application_access_points_page.yaml` so the guard is re-evaluated on each iteration
+### 2.1.0 (2026-09-13) — Pagination Timeout Fix (Complete)
+- **Critical Fix**: Eliminated the `range(1, 1001)` 1000-iteration loop that caused GCM discovery timeouts on live systems
+  - Root cause: even with per-task `when: has_more_pages | bool` guards (introduced in v2.0.2), Ansible still evaluates every task inside an included file for **every loop iteration** — it does not short-circuit the loop. With 4 environments this produced ~32,000 task evaluations when ~32 were sufficient
+  - Secondary bug: `has_more_pages` and `total_pages` variables were shared between the certificates and access points helpers, causing variable state to bleed between them
+  - Fix: **fetch-first-page-then-remaining** strategy — page 1 is fetched inline; `total_pages` is read from the pagination response; remaining pages loop over `range(2, total_pages+1)` which produces an empty list when `total_pages == 1` (the common case), so the extra-pages loop runs 0 times for single-page environments
+  - Scoped variables: renamed to `cert_total_pages` / `ap_total_pages` to eliminate cross-helper collision
+  - Added explicit `timeout: 60` to all discovery `uri` calls and `timeout: 30` to `test_connection.yaml` to prevent hung HTTP connections blocking indefinitely
+- **Task evaluation comparison** (4 environments, 1 page each): v2.0.x ~32,000 → v2.1.0 ~32
+
+### 2.0.2 (2026-09-12) — Partial Pagination Timeout Fix (superseded by 2.1.0)
+- **Attempted Fix**: Moved `when: has_more_pages | bool` into every individual task inside the page helper files
+  - This reduced wasted work per skipped iteration but the 1000-iteration loop itself still ran in full, causing timeouts on live systems with multiple environments
+  - Superseded by the complete fix in v2.1.0
 
 ### 2.0.1 (2026-09-11) — Pagination Bug Fix
 - **Critical Fix**: Resolved infinite loop / `exit status 1` crash in discovery
